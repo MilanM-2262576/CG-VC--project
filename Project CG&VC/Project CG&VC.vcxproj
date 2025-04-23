@@ -71,12 +71,12 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>C:\Users\joche\Documents\UHasselt\Github\CG-Project\OpenGL\Include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\joche\Documents\UHasselt\Github\CG-Project\OpenGL\Libs;$(LibraryPath)</LibraryPath>
+    <IncludePath>..\OpenGL\Include;$(IncludePath)</IncludePath>
+    <LibraryPath>..\OpenGL\Libs;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>C:\Users\joche\Documents\UHasselt\Github\CG-Project\OpenGL\Include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\joche\Documents\UHasselt\Github\CG-Project\OpenGL\Libs;$(LibraryPath)</LibraryPath>
+    <IncludePath>..\OpenGL\Include;$(IncludePath)</IncludePath>
+    <LibraryPath>..\OpenGL\Libs;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
