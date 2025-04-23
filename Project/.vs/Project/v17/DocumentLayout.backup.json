@@ -1,9 +1,9 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "C:\\Users\\joche\\OneDrive\\Documents\\UHasselt\\3e ba\\Semester 2\\CG\u0026VC\\CG-VC--project-\\Project\\",
+  "WorkspaceRootPath": "C:\\Users\\joche\\OneDrive\\Documents\\UHasselt\\3e ba\\Semester 2\\CG\u0026VC\\CG-VC--project\\Project\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{AB9AFCAD-9123-4BC5-B3F5-2DCC857E9A5B}|Project.vcxproj|C:\\Users\\joche\\OneDrive\\Documents\\UHasselt\\3e ba\\Semester 2\\CG\u0026VC\\CG-VC--project-\\Project\\main.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "AbsoluteMoniker": "D:0:0:{AB9AFCAD-9123-4BC5-B3F5-2DCC857E9A5B}|Project.vcxproj|C:\\Users\\joche\\OneDrive\\Documents\\UHasselt\\3e ba\\Semester 2\\CG\u0026VC\\CG-VC--project\\Project\\main.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
       "RelativeMoniker": "D:0:0:{AB9AFCAD-9123-4BC5-B3F5-2DCC857E9A5B}|Project.vcxproj|solutionrelative:main.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     }
   ],
@@ -20,11 +20,11 @@
               "$type": "Document",
               "DocumentIndex": 0,
               "Title": "main.cpp",
-              "DocumentMoniker": "C:\\Users\\joche\\OneDrive\\Documents\\UHasselt\\3e ba\\Semester 2\\CG\u0026VC\\CG-VC--project-\\Project\\main.cpp",
+              "DocumentMoniker": "C:\\Users\\joche\\OneDrive\\Documents\\UHasselt\\3e ba\\Semester 2\\CG\u0026VC\\CG-VC--project\\Project\\main.cpp",
               "RelativeDocumentMoniker": "main.cpp",
-              "ToolTip": "C:\\Users\\joche\\OneDrive\\Documents\\UHasselt\\3e ba\\Semester 2\\CG\u0026VC\\CG-VC--project-\\Project\\main.cpp",
+              "ToolTip": "C:\\Users\\joche\\OneDrive\\Documents\\UHasselt\\3e ba\\Semester 2\\CG\u0026VC\\CG-VC--project\\Project\\main.cpp",
               "RelativeToolTip": "main.cpp",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAABUAAAAAAAAAAAAAACUAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
               "WhenOpened": "2025-04-23T13:28:24.895Z",
               "EditorCaption": ""
