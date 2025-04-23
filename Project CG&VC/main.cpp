@@ -27,34 +27,13 @@ void processInput(GLFWwindow* window);
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
+GLFWwindow* InitializeGLFW();
 
 
 int main() {
-	glfwInit();
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
-	GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "CG&VC project", NULL, NULL);
-	if (window == NULL) {
-		std::cout << "Failed to create GLFW window" << std::endl;
-		glfwTerminate();
-		return -1;
-	}
-	glfwMakeContextCurrent(window);
-	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-	glfwSetCursorPosCallback(window, mouse_callback);
-	glfwSetScrollCallback(window, scroll_callback);
-
-	// tell GLFW to capture our mouse
-	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-
-	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
-		std::cout << "Failed to initialize GLAD" << std::endl;
-		return -1;
-	}
-
-	glEnable(GL_DEPTH_TEST);
+	//Initialize GLFW window
+	GLFWwindow* window = InitializeGLFW();
+	if (!window) { return -1;  }
 
 	//Viewport instellen
 	glViewport(0, 0, 800, 600);
@@ -98,19 +77,17 @@ int main() {
 		glm::mat4 view = camera.GetViewMatrix();
 		bezierShader.setMat4("view", view);
 
+		//model matrix (scalen)
+		glm::mat4 model = glm::mat4(1.0f); // Identiteitsmatrix
+		model = glm::scale(model, glm::vec3(2.0f, 2.0f, 2.0f)); // Schalen met factor 2
+		bezierShader.setMat4("model", model);
+
 		//activate beziershader
 		bezierShader.use();
-		bezierShader.setMat4("view", view);
-		bezierShader.setMat4("projection", projection);
-
-
-
+		
 		//render beziercurve
 		glBindVertexArray(curveVAO);
 		glDrawArrays(GL_LINE_STRIP, 0, curvePoints.size());
-
-
-
 
 		glfwPollEvents();
 		glfwSwapBuffers(window);
@@ -118,6 +95,34 @@ int main() {
 
 	glfwTerminate();
 	return 0;
+}
+
+//Initialization of GLFW
+GLFWwindow* InitializeGLFW() {
+	glfwInit();
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
+	GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "CG&VC project", NULL, NULL);
+	if (window == NULL) {
+		std::cout << "Failed to create GLFW window" << std::endl;
+		glfwTerminate();
+		return nullptr;
+	}
+	glfwMakeContextCurrent(window);
+	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+	glfwSetCursorPosCallback(window, mouse_callback);
+	glfwSetScrollCallback(window, scroll_callback);
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
+	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
+		std::cout << "Failed to initialize GLAD" << std::endl;
+		return nullptr;
+	}
+
+	glEnable(GL_DEPTH_TEST);
+	return window;
 }
 
 // this functions processes each input
@@ -166,7 +171,6 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 	glViewport(0, 0, width, height);
 }
-
 
 // This method returns the VAO 
 unsigned int createLineVAO(const std::vector<glm::vec3>& points) {
