@@ -71,12 +71,12 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>"C:\Users\joche\OneDrive\Documents\UHasselt\3e ba\Semester 2\CG&amp;VC\OpenGL\Include";$(IncludePath)</IncludePath>
-    <LibraryPath>"C:\Users\joche\OneDrive\Documents\UHasselt\3e ba\Semester 2\CG&amp;VC\OpenGL\Libs";$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Users\joche\Documents\UHasselt\Github\CG-Project\OpenGL\Include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\joche\Documents\UHasselt\Github\CG-Project\OpenGL\Libs;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>"C:\Users\joche\OneDrive\Documents\UHasselt\3e ba\Semester 2\CG&amp;VC\OpenGL\Include";$(IncludePath)</IncludePath>
-    <LibraryPath>"C:\Users\joche\OneDrive\Documents\UHasselt\3e ba\Semester 2\CG&amp;VC\OpenGL\Libs";$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Users\joche\Documents\UHasselt\Github\CG-Project\OpenGL\Include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\joche\Documents\UHasselt\Github\CG-Project\OpenGL\Libs;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
