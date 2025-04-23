@@ -71,8 +71,8 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>C:\Users\joche\Documents\UHasselt\Github\CG-Project\OpenGL\Include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\joche\Documents\UHasselt\Github\CG-Project\OpenGL\Libs;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\OpenGL\Includes;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\OpenGL\Libs;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>C:\Users\joche\Documents\UHasselt\Github\CG-Project\OpenGL\Include;$(IncludePath)</IncludePath>
@@ -112,6 +112,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>C:\OpenGL\Includes\glfw-3.4\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
