@@ -143,15 +143,23 @@
     <ClCompile Include="glad.c" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Shader.cpp" />
+    <ClCompile Include="stb_image.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BezierCurve.h" />
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="Shader.h" />
+    <ClInclude Include="stb_image.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="BezierShader.frag" />
     <None Include="BezierShader.vert" />
+    <None Include="GrassShader.frag" />
+    <None Include="GrassShader.vert" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="grass.jpg" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

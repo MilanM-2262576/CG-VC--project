@@ -14,7 +14,7 @@ public:
 
 	void ForwardDifference(int steps);
 	glm::vec3 GetPoint(float t) const;
-	std::vector<glm::vec3> GeneratePoints(int resolution) const;
+	std::vector<glm::vec3> GeneratePoints(int resolution);
 
 	void AddPoint(glm::vec3 point) { m_curvePoints.push_back(point); }
 	void ClearPoints() { m_curvePoints.clear(); }
