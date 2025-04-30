@@ -1,5 +1,4 @@
-#ifndef SHADER_H
-#define SHADER_H
+#pragma once
 
 #include <glad/glad.h> // include glad to get all the required OpenGL headers
 
@@ -37,5 +36,3 @@ public:
     void setMat4(const std::string& name, const glm::mat4& mat) const;
 
 };
-
-#endif
