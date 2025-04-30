@@ -44,19 +44,46 @@ int main() {
 	//Initialize GLFW window
 	GLFWwindow* window = InitializeGLFW();
 	if (!window) { return -1; }
-
-	//bezier controlpoints
-	std::vector<glm::vec3> cps = {
-	  {-0.8, 1.0, -0.9},  
-	  {-0.4, 1.8, 0},     
-	  {0.4, 0.2, 0},      
-	  {0.8, 1.0, 0.5}     
+  
+	//bezier controlpoints for the multiple Bezier segments
+	std::vector<std::vector<glm::vec3>> bezierSegments = {
+	{
+		{-1.0, 1.0, -1.0},  
+		{-0.5, 3.0, 0.0},   
+		{0.5, 0.5, 0.0},    
+		{1.0, 1.0, 0.5}     
+	},
+	{
+		{1.0, 1.0, 0.5},   
+		{1.5, 0.0, 1.0},    
+		{2.0, 2.5, 1.5},   
+		{2.5, 1.0, 2.0}   
+	},
+	{
+		{2.5, 1.0, 2.0},   
+		{3.0, 3.0, 2.5},   
+		{3.5, 0.0, 3.0},   
+		{4.0, 1.0, 3.5}  
+	},
+	{
+		{4.0, 1.0, 3.5},    
+		{4.5, 2.0, 4.0},   
+		{5.0, 0.5, 4.5}, 
+		{5.5, 1.0, 5.0}   
+	}
 	};
 
-	//bezier
-	BezierCurve curve(cps);
-	std::vector<glm::vec3> curvePoints = curve.GeneratePoints(100);
-	unsigned int curveVAO = createLineVAO(curvePoints);
+	//bezier 
+	std::vector<glm::vec3> combinedCurvePoints;
+
+	for (const auto& cps : bezierSegments) {
+		BezierCurve curve(cps);
+		std::vector<glm::vec3> segmentPoints = curve.GeneratePoints(100); // 100 punten per segment
+		combinedCurvePoints.insert(combinedCurvePoints.end(), segmentPoints.begin(), segmentPoints.end());
+	}
+
+	// Maak een VAO voor de gecombineerde Bézier-curve
+	unsigned int curveVAO = createLineVAO(combinedCurvePoints);
 
 	Shader bezierShader(".\\BezierShader.vert", ".\\BezierShader.frag");
 
@@ -106,7 +133,7 @@ int main() {
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 		*/
 
-		// Render de B�zier-curve
+		// Render de Bézier-curve
 		bezierShader.use();
 		bezierShader.setMat4("projection", projection);
 		bezierShader.setMat4("view", view);
@@ -118,7 +145,7 @@ int main() {
 		glLineWidth(10.0f);
 
 		glBindVertexArray(curveVAO);
-		glDrawArrays(GL_LINE_STRIP, 0, curvePoints.size());
+		glDrawArrays(GL_LINE_STRIP, 0, combinedCurvePoints.size());
 
 		glfwPollEvents();
 		glfwSwapBuffers(window);
