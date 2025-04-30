@@ -39,6 +39,9 @@
     <ClCompile Include="stb_image.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Heightmap.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BezierCurve.h">
@@ -56,6 +59,9 @@
     <ClInclude Include="stb_image.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Heightmap.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="BezierShader.vert">
@@ -70,9 +76,18 @@
     <None Include="GrassShader.vert">
       <Filter>Source Files\Shaders</Filter>
     </None>
+    <None Include="HeightmapShader.vert">
+      <Filter>Source Files\Shaders</Filter>
+    </None>
+    <None Include="HeightmapShader.frag">
+      <Filter>Source Files\Shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="grass.jpg">
+      <Filter>Resource Files\world</Filter>
+    </Image>
+    <Image Include="heightmap.png">
       <Filter>Resource Files\world</Filter>
     </Image>
   </ItemGroup>
