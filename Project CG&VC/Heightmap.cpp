@@ -31,7 +31,7 @@ void Heightmap::LoadHeightmap(const std::string& heightmapPath, float yScale, fl
             vertices.push_back(-height / 2.0f + i);            // v.z
 
             // Texture coordinates
-            float tilingFactor = 5.0f; // Used to increase amount of textures uses
+            float tilingFactor = 50.0f; // Used to increase amount of textures uses
             vertices.push_back((float)j / (width - 1) * tilingFactor);        // u
             vertices.push_back((float)i / (height - 1) * tilingFactor);       // v
         }
@@ -85,8 +85,8 @@ unsigned int Heightmap::LoadTexture(const std::string& path) {
         glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
         glGenerateMipmap(GL_TEXTURE_2D);
 
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 

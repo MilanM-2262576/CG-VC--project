@@ -10,14 +10,12 @@
 #include "Heightmap.h"
 #include "BezierCurve.h"
 
-
 // Screen size
 const unsigned int SCR_WIDTH = 1920;
 const unsigned int SCR_HEIGHT = 1080;
 
 //Grass
 unsigned int loadTexture(const char* path);
-unsigned int createPlaneVAO();
 
 //Bezier
 unsigned int createLineVAO(const std::vector<glm::vec3>& points);
@@ -87,13 +85,8 @@ int main() {
 
 	Shader bezierShader(".\\BezierShader.vert", ".\\BezierShader.frag");
 
-	//grass ground
-	unsigned int planeVAO = createPlaneVAO();
-	Shader grassShader(".\\GrassShader.vert", ".\\GrassShader.frag");
-	unsigned int grassTexture = loadTexture(".\\grass.jpg");
-
 	// Create Heightmap
-	Heightmap heightmap(".\\heightmap.png", ".\\grass.jpg", 64.0f / 256.0f, 16.0f);
+	Heightmap heightmap(".\\heightmap.png", ".\\sand.jpg", 64.0f / 256.0f, 16.0f);
 
 	while (!glfwWindowShouldClose(window)) {
 		// Time 
@@ -118,21 +111,6 @@ int main() {
 		glm::mat4 heightmapModel = glm::mat4(1.0f);
 		heightmap.Render(projection, view, heightmapModel);
 
-		/*
-		// Render het gras
-		grassShader.use();
-		grassShader.setInt("grassTexture", 0);
-		grassShader.setMat4("projection", projection);
-		grassShader.setMat4("view", view);
-
-		glm::mat4 groundModel = glm::mat4(1.0f);
-		grassShader.setMat4("model", groundModel);
-
-		glBindTexture(GL_TEXTURE_2D, grassTexture);
-		glBindVertexArray(planeVAO);
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-		*/
-
 		// Render de Bézier-curve
 		bezierShader.use();
 		bezierShader.setMat4("projection", projection);
@@ -153,7 +131,6 @@ int main() {
 
 	// Delete buffers
 	glDeleteVertexArrays(1, &curveVAO);
-	glDeleteVertexArrays(1, &planeVAO);
 
 	glfwTerminate();
 	return 0;
@@ -250,45 +227,6 @@ unsigned int createLineVAO(const std::vector<glm::vec3>& points) {
 	glEnableVertexAttribArray(0);
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindVertexArray(0);
-
-	return VAO;
-}
-
-// This method creates a VAO and VBO for the plane of the grass
-unsigned int createPlaneVAO() {
-	float planeVertices[] = {
-		// posities          // texcoords
-		-5.0f, 0.0f, -5.0f,  0.0f, 0.0f,
-		 5.0f, 0.0f, -5.0f,  1.0f, 0.0f,
-		 5.0f, 0.0f,  5.0f,  1.0f, 1.0f,
-		-5.0f, 0.0f,  5.0f,  0.0f, 1.0f
-	};
-
-	unsigned int planeIndices[] = {
-		0, 1, 2,
-		0, 2, 3
-	};
-
-	unsigned int VAO, VBO, EBO;
-	glGenVertexArrays(1, &VAO);
-	glGenBuffers(1, &VBO);
-	glGenBuffers(1, &EBO);
-
-	glBindVertexArray(VAO);
-	
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(planeVertices), planeVertices, GL_STATIC_DRAW);
-
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(planeIndices), planeIndices, GL_STATIC_DRAW);
-
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(0);
-
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-	glEnableVertexAttribArray(1);
-
 	glBindVertexArray(0);
 
 	return VAO;
