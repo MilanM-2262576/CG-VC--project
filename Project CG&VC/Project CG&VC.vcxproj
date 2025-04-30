@@ -141,6 +141,7 @@
     <ClCompile Include="BezierCurve.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="glad.c" />
+    <ClCompile Include="Heightmap.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="stb_image.cpp" />
@@ -148,6 +149,7 @@
   <ItemGroup>
     <ClInclude Include="BezierCurve.h" />
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="Heightmap.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="stb_image.h" />
@@ -157,9 +159,12 @@
     <None Include="BezierShader.vert" />
     <None Include="GrassShader.frag" />
     <None Include="GrassShader.vert" />
+    <None Include="HeightmapShader.frag" />
+    <None Include="HeightmapShader.vert" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="grass.jpg" />
+    <Image Include="heightmap.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

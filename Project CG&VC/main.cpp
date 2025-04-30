@@ -1,14 +1,19 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-#include <iostream>
-#include "Camera.h"
-#include "Shader.h"
-#include "BezierCurve.h"
+
 #include "stb_image.h"
 
+#include <iostream>
+
+#include "Camera.h"
+#include "Shader.h"
+#include "Heightmap.h"
+#include "BezierCurve.h"
+
+
 // Screen size
-const unsigned int SCR_WIDTH = 800;
-const unsigned int SCR_HEIGHT = 600;
+const unsigned int SCR_WIDTH = 1920;
+const unsigned int SCR_HEIGHT = 1080;
 
 //Grass
 unsigned int loadTexture(const char* path);
@@ -18,7 +23,7 @@ unsigned int createPlaneVAO();
 unsigned int createLineVAO(const std::vector<glm::vec3>& points);
 
 //Camera
-Camera camera(glm::vec3(0.0f, 2.0f, 3.0f)); // Hoger, zodat je op het grasveld neerkijkt
+Camera camera(glm::vec3(0.0f, 100.0f, 3.0f)); // Hoger, zodat je op het grasveld neerkijkt
 float lastX = SCR_WIDTH / 2.0f;
 float lastY = SCR_HEIGHT / 2.0f;
 bool firstMouse = true;
@@ -40,10 +45,6 @@ int main() {
 	GLFWwindow* window = InitializeGLFW();
 	if (!window) { return -1; }
 
-	//Viewport instellen
-	glViewport(0, 0, 800, 600);
-
-
 	//bezier controlpoints
 	std::vector<glm::vec3> cps = {
 	  {-0.8, 1.0, -0.9},  
@@ -64,26 +65,33 @@ int main() {
 	Shader grassShader(".\\GrassShader.vert", ".\\GrassShader.frag");
 	unsigned int grassTexture = loadTexture(".\\grass.jpg");
 
+	// Create Heightmap
+	Heightmap heightmap(".\\heightmap.png", ".\\grass.jpg", 64.0f / 256.0f, 16.0f);
+
 	while (!glfwWindowShouldClose(window)) {
-		//Time 
+		// Time 
 		// -------------------------
 		float currentFrame = static_cast<float>(glfwGetTime());
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
 
-		// Input verwerken
+		// Process inputs
 		// -------------------------
 		processInput(window);
 
-		// Renderen
+		// Render
 		// --------------------------
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		// Projection en view matrices
-		glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+		glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 10000.0f);
 		glm::mat4 view = camera.GetViewMatrix();
 
+		glm::mat4 heightmapModel = glm::mat4(1.0f);
+		heightmap.Render(projection, view, heightmapModel);
+
+		/*
 		// Render het gras
 		grassShader.use();
 		grassShader.setInt("grassTexture", 0);
@@ -96,15 +104,16 @@ int main() {
 		glBindTexture(GL_TEXTURE_2D, grassTexture);
 		glBindVertexArray(planeVAO);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		*/
 
 		// Render de Bézier-curve
 		bezierShader.use();
 		bezierShader.setMat4("projection", projection);
 		bezierShader.setMat4("view", view);
 
-		glm::mat4 model = glm::mat4(1.0f);
-		model = glm::scale(model, glm::vec3(2.0f, 2.0f, 2.0f));
-		bezierShader.setMat4("model", model);
+		glm::mat4 bezierModel = glm::mat4(1.0f);
+		bezierModel = glm::scale(bezierModel, glm::vec3(2.0f, 2.0f, 2.0f));
+		bezierShader.setMat4("model", bezierModel);
 
 		glLineWidth(10.0f);
 
@@ -114,6 +123,10 @@ int main() {
 		glfwPollEvents();
 		glfwSwapBuffers(window);
 	}
+
+	// Delete buffers
+	glDeleteVertexArrays(1, &curveVAO);
+	glDeleteVertexArrays(1, &planeVAO);
 
 	glfwTerminate();
 	return 0;
@@ -164,13 +177,11 @@ void processInput(GLFWwindow* window) {
 }
 
 // glfw: whenever the mouse moves, this callback is called
-void mouse_callback(GLFWwindow* window, double xposIn, double yposIn)
-{
+void mouse_callback(GLFWwindow* window, double xposIn, double yposIn) {
 	float xpos = static_cast<float>(xposIn);
 	float ypos = static_cast<float>(yposIn);
 
-	if (firstMouse)
-	{
+	if (firstMouse) {
 		lastX = xpos;
 		lastY = ypos;
 		firstMouse = false;
