@@ -9,6 +9,7 @@
 #include "Shader.h"
 #include "Heightmap.h"
 #include "BezierCurve.h"
+#include "Light.h"
 
 // Screen size
 const unsigned int SCR_WIDTH = 1920;
@@ -21,7 +22,7 @@ unsigned int loadTexture(const char* path);
 unsigned int createLineVAO(const std::vector<glm::vec3>& points);
 
 //Camera
-Camera camera(glm::vec3(0.0f, 100.0f, 3.0f)); // Hoger, zodat je op het grasveld neerkijkt
+Camera camera(glm::vec3(0.0f, 100.0f, 3.0f)); // Pretty high for now so you can see the heightmap better
 float lastX = SCR_WIDTH / 2.0f;
 float lastY = SCR_HEIGHT / 2.0f;
 bool firstMouse = true;
@@ -29,6 +30,10 @@ bool firstMouse = true;
 // timing
 float deltaTime = 0.0f;	// time between current frame and last frame
 float lastFrame = 0.0f;
+
+// lighting
+glm::vec3 lightPos(1.2f, 101.0f, 2.0f);
+glm::vec3 lightColor(1.0f, 1.0f, 1.0f);
 
 //functions
 void processInput(GLFWwindow* window);
@@ -88,6 +93,71 @@ int main() {
 	// Create Heightmap
 	Heightmap heightmap(".\\heightmap.png", ".\\sand.jpg", 64.0f / 256.0f, 16.0f);
 
+	Light light(lightPos, lightColor);
+	light.Initialize();
+
+	Shader lightingShader(".\\LightingShader.vert", ".\\LightingShader.frag");
+
+	float cubeVertices[] = {
+	-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+	 0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+	 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+	 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+	-0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+	-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+
+	-0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+	 0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+	 0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+	 0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+	-0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+	-0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+
+	-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+	-0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+	-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+	-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+	-0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+	-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+
+	 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+	 0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+	 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+	 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+	 0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+	 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+
+	-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+	 0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+	 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+	 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+	-0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+	-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+
+	-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
+	 0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
+	 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+	 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+	-0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+	-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f
+	};
+
+	unsigned int lightingVAO, lightingVBO;
+	glGenBuffers(1, &lightingVBO);
+	glGenVertexArrays(1, &lightingVAO);
+	glBindVertexArray(lightingVAO);
+	
+	glBindBuffer(GL_ARRAY_BUFFER, lightingVBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(cubeVertices), cubeVertices, GL_STATIC_DRAW);
+
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+	glEnableVertexAttribArray(0);
+    glEnableVertexAttribArray(1);
+
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
+
 	while (!glfwWindowShouldClose(window)) {
 		// Time 
 		// -------------------------
@@ -125,12 +195,35 @@ int main() {
 		glBindVertexArray(curveVAO);
 		glDrawArrays(GL_LINE_STRIP, 0, combinedCurvePoints.size());
 
+		light.Update(currentFrame);
+		light.Render(projection, view);
+		lightPos = light.position;
+
+		lightingShader.use();
+		lightingShader.setVec3("objectColor", 1.0f, 0.5f, 0.31f);
+		lightingShader.setVec3("lightColor", lightColor);
+		lightingShader.setVec3("lightPos", lightPos);
+		lightingShader.setVec3("viewPos", camera.Position);
+
+		lightingShader.setMat4("projection", projection);
+		lightingShader.setMat4("view", view);
+
+		glm::mat4 lightingModel = glm::mat4(1.0f);
+		lightingModel = glm::translate(lightingModel, glm::vec3(0.0f, 100.0f, 0.0f));
+		lightingShader.setMat4("model", lightingModel);
+
+		glBindVertexArray(lightingVAO);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+
 		glfwPollEvents();
 		glfwSwapBuffers(window);
 	}
 
 	// Delete buffers
 	glDeleteVertexArrays(1, &curveVAO);
+
+	glDeleteBuffers(1, &lightingVBO);
+	glDeleteVertexArrays(1, &lightingVAO);
 
 	glfwTerminate();
 	return 0;
