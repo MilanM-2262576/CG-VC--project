@@ -9,6 +9,8 @@
 #include "Shader.h"
 #include "Heightmap.h"
 #include "BezierCurve.h"
+#include "Rollercoaster.h"
+#include "Cart.h"
 
 // Screen size
 const unsigned int SCR_WIDTH = 1920;
@@ -17,8 +19,6 @@ const unsigned int SCR_HEIGHT = 1080;
 //Grass
 unsigned int loadTexture(const char* path);
 
-//Bezier
-unsigned int createLineVAO(const std::vector<glm::vec3>& points);
 
 //Camera
 Camera camera(glm::vec3(0.0f, 100.0f, 3.0f)); // Hoger, zodat je op het grasveld neerkijkt
@@ -42,48 +42,113 @@ int main() {
 	//Initialize GLFW window
 	GLFWwindow* window = InitializeGLFW();
 	if (!window) { return -1; }
-  
-	//bezier controlpoints for the multiple Bezier segments
+
+
 	std::vector<std::vector<glm::vec3>> bezierSegments = {
-	{
-		{-1.0, 1.0, -1.0},  
-		{-0.5, 3.0, 0.0},   
-		{0.5, 0.5, 0.0},    
-		{1.0, 1.0, 0.5}     
-	},
-	{
-		{1.0, 1.0, 0.5},   
-		{1.5, 0.0, 1.0},    
-		{2.0, 2.5, 1.5},   
-		{2.5, 1.0, 2.0}   
-	},
-	{
-		{2.5, 1.0, 2.0},   
-		{3.0, 3.0, 2.5},   
-		{3.5, 0.0, 3.0},   
-		{4.0, 1.0, 3.5}  
-	},
-	{
-		{4.0, 1.0, 3.5},    
-		{4.5, 2.0, 4.0},   
-		{5.0, 0.5, 4.5}, 
-		{5.5, 1.0, 5.0}   
-	}
+		// Lange rechte start
+		{
+			{0.0f, 1.0f, 0.0f},   // Startpunt
+			{10.0f, 1.0f, 0.0f},  // Rechte lijn
+			{20.0f, 1.0f, 0.0f},  // Rechte lijn
+			{30.0f, 1.0f, 0.0f}   // Rechte lijn
+		},
+		// Zachte klim
+		{
+			{30.0f, 1.0f, 0.0f},
+			{35.0f, 3.0f, 2.0f},  // Begin klim
+			{40.0f, 5.0f, 4.0f},  // Top van de klim
+			{45.0f, 3.0f, 6.0f}   // Overgang naar vlak stuk
+		},
+		// Zachte daling
+		{
+			{45.0f, 3.0f, 6.0f},
+			{50.0f, 2.0f, 8.0f},  // Halverwege daling
+			{55.0f, 1.5f, 10.0f}, // Bijna bodem
+			{60.0f, 1.0f, 12.0f}  // Bodem
+		},
+		// Bocht naar rechts
+		{
+			{60.0f, 1.0f, 12.0f},
+			{65.0f, 1.0f, 16.0f},  // Begin bocht
+			{70.0f, 1.0f, 20.0f},  // Midden bocht
+			{75.0f, 1.0f, 24.0f}   // Einde bocht
+		},
+		// Kleine klim en daling
+		{
+			{75.0f, 1.0f, 24.0f},
+			{80.0f, 2.0f, 26.0f},  // Kleine klim
+			{85.0f, 2.0f, 28.0f},  // Vlak stuk
+			{90.0f, 1.0f, 30.0f}   // Kleine daling
+		},
+		// Bocht naar links
+		{
+			{90.0f, 1.0f, 30.0f},
+			{95.0f, 1.0f, 34.0f},  // Begin bocht
+			{100.0f, 1.0f, 38.0f}, // Midden bocht
+			{105.0f, 1.0f, 42.0f}  // Einde bocht
+		},
+		// Zachte klim
+		{
+			{105.0f, 1.0f, 42.0f},
+			{110.0f, 3.0f, 44.0f}, // Begin klim
+			{115.0f, 5.0f, 46.0f}, // Top van de klim
+			{120.0f, 3.0f, 48.0f}  // Overgang naar daling
+		},
+		// Zachte daling
+		{
+			{120.0f, 3.0f, 48.0f},
+			{125.0f, 2.0f, 50.0f}, // Halverwege daling
+			{130.0f, 1.5f, 52.0f}, // Bijna bodem
+			{135.0f, 1.0f, 54.0f}  // Bodem
+		},
+		// Eindbocht
+		{
+			{135.0f, 1.0f, 54.0f},
+			{140.0f, 1.0f, 58.0f},  // Begin bocht
+			{145.0f, 1.0f, 62.0f},  // Midden bocht
+			{150.0f, 1.0f, 66.0f}   // Einde bocht
+		},
+		// Extra segmenten om de achtbaan te verlengen
+		// Rechte lijn
+		{
+			{150.0f, 1.0f, 66.0f},
+			{160.0f, 1.0f, 70.0f},
+			{170.0f, 1.0f, 74.0f},
+			{180.0f, 1.0f, 78.0f}
+		},
+		// Zachte klim
+		{
+			{180.0f, 1.0f, 78.0f},
+			{185.0f, 3.0f, 80.0f},
+			{190.0f, 5.0f, 82.0f},
+			{195.0f, 3.0f, 84.0f}
+		},
+		// Zachte daling
+		{
+			{195.0f, 3.0f, 84.0f},
+			{200.0f, 2.0f, 86.0f},
+			{205.0f, 1.5f, 88.0f},
+			{210.0f, 1.0f, 90.0f}
+		},
+		// Bocht naar rechts
+		{
+			{210.0f, 1.0f, 90.0f},
+			{215.0f, 1.0f, 94.0f},
+			{220.0f, 1.0f, 98.0f},
+			{225.0f, 1.0f, 102.0f}
+		},
+		// Eindbocht
+		{
+			{225.0f, 1.0f, 102.0f},
+			{230.0f, 1.0f, 106.0f},
+			{235.0f, 1.0f, 110.0f},
+			{240.0f, 1.0f, 114.0f}
+		}
 	};
 
-	//bezier 
-	std::vector<glm::vec3> combinedCurvePoints;
+	RollerCoaster rollerCoaster(bezierSegments, 0.5f, 16); // Create a rollercoaster
 
-	for (const auto& cps : bezierSegments) {
-		BezierCurve curve(cps);
-		std::vector<glm::vec3> segmentPoints = curve.GeneratePoints(100); // 100 punten per segment
-		combinedCurvePoints.insert(combinedCurvePoints.end(), segmentPoints.begin(), segmentPoints.end());
-	}
-
-	// Maak een VAO voor de gecombineerde Bézier-curve
-	unsigned int curveVAO = createLineVAO(combinedCurvePoints);
-
-	Shader bezierShader(".\\BezierShader.vert", ".\\BezierShader.frag");
+	Cart cart(&rollerCoaster, 0.5f); // Create a cart
 
 	// Create Heightmap
 	Heightmap heightmap(".\\heightmap.png", ".\\sand.jpg", 64.0f / 256.0f, 16.0f);
@@ -108,29 +173,24 @@ int main() {
 		glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 10000.0f);
 		glm::mat4 view = camera.GetViewMatrix();
 
+		// Render the heightmap
 		glm::mat4 heightmapModel = glm::mat4(1.0f);
 		heightmap.Render(projection, view, heightmapModel);
 
-		// Render de Bézier-curve
-		bezierShader.use();
-		bezierShader.setMat4("projection", projection);
-		bezierShader.setMat4("view", view);
+		// Render the rollercoaster
+		rollerCoaster.Render(projection, view);
 
-		glm::mat4 bezierModel = glm::mat4(1.0f);
-		bezierModel = glm::scale(bezierModel, glm::vec3(2.0f, 2.0f, 2.0f));
-		bezierShader.setMat4("model", bezierModel);
+		// Render the cart
+		cart.Update(deltaTime);
+		cart.Render(projection, view);
 
-		glLineWidth(10.0f);
-
-		glBindVertexArray(curveVAO);
-		glDrawArrays(GL_LINE_STRIP, 0, combinedCurvePoints.size());
 
 		glfwPollEvents();
 		glfwSwapBuffers(window);
 	}
 
-	// Delete buffers
-	glDeleteVertexArrays(1, &curveVAO);
+	// Clean up
+	rollerCoaster.CleanUp();
 
 	glfwTerminate();
 	return 0;
@@ -211,26 +271,6 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 	glViewport(0, 0, width, height);
 }
 
-// This method returns the VAO 
-// It creates a VAO and VBO for the line of the Bezier curve
-unsigned int createLineVAO(const std::vector<glm::vec3>& points) {
-	unsigned int VAO, VBO;
-	glGenVertexArrays(1, &VAO);
-	glGenBuffers(1, &VBO);
-
-	glBindVertexArray(VAO);
-
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, points.size() * sizeof(glm::vec3), points.data(), GL_STATIC_DRAW);
-
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), (void*)0);
-	glEnableVertexAttribArray(0);
-
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindVertexArray(0);
-
-	return VAO;
-}
 
 // This method loads the texture from the given path
 unsigned int loadTexture(const char* path) {

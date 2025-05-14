@@ -140,23 +140,29 @@
   <ItemGroup>
     <ClCompile Include="BezierCurve.cpp" />
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="Cart.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="Heightmap.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Rollercoaster.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="stb_image.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BezierCurve.h" />
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="Cart.h" />
     <ClInclude Include="Heightmap.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="Rollercoaster.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="stb_image.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="BezierShader.frag" />
     <None Include="BezierShader.vert" />
+    <None Include="Cart.frag" />
+    <None Include="Cart.vert" />
     <None Include="GrassShader.frag" />
     <None Include="GrassShader.vert" />
     <None Include="HeightmapShader.frag" />

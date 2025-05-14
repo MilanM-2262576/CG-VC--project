@@ -42,6 +42,12 @@
     <ClCompile Include="Heightmap.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Rollercoaster.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Cart.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BezierCurve.h">
@@ -62,6 +68,12 @@
     <ClInclude Include="Heightmap.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Rollercoaster.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Cart.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="BezierShader.vert">
@@ -80,6 +92,12 @@
       <Filter>Source Files\Shaders</Filter>
     </None>
     <None Include="HeightmapShader.frag">
+      <Filter>Source Files\Shaders</Filter>
+    </None>
+    <None Include="Cart.vert">
+      <Filter>Source Files\Shaders</Filter>
+    </None>
+    <None Include="Cart.frag">
       <Filter>Source Files\Shaders</Filter>
     </None>
   </ItemGroup>
