@@ -11,6 +11,7 @@
 #include "BezierCurve.h"
 #include "Rollercoaster.h"
 #include "Cart.h"
+#include "Light.h"
 
 // Screen size
 const unsigned int SCR_WIDTH = 1920;
@@ -21,7 +22,7 @@ unsigned int loadTexture(const char* path);
 
 
 //Camera
-Camera camera(glm::vec3(0.0f, 100.0f, 3.0f)); // Hoger, zodat je op het grasveld neerkijkt
+Camera camera(glm::vec3(0.0f, 100.0f, 3.0f)); // Pretty high for now so you can see the heightmap better
 float lastX = SCR_WIDTH / 2.0f;
 float lastY = SCR_HEIGHT / 2.0f;
 bool firstMouse = true;
@@ -29,6 +30,15 @@ bool firstMouse = true;
 // timing
 float deltaTime = 0.0f;	// time between current frame and last frame
 float lastFrame = 0.0f;
+
+// lighting
+glm::vec3 lightPos(1.2f, 101.0f, 2.0f);
+glm::vec3 lightColor(1.0f, 1.0f, 1.0f);
+
+// Floats deciding how quickly the light fades over a distance
+float constant = 1.0f;
+float linear = 0.09f;
+float quadratic = 0.032f;
 
 //functions
 void processInput(GLFWwindow* window);
@@ -151,7 +161,76 @@ int main() {
 	Cart cart(&rollerCoaster, 0.5f); // Create a cart
 
 	// Create Heightmap
-	Heightmap heightmap(".\\heightmap.png", ".\\sand.jpg", 64.0f / 256.0f, 16.0f);
+	Heightmap heightmap(".\\heightmap.jpeg", ".\\textures", 64.0f / 256.0f, 16.0f);
+
+	std::vector<PointLight> lights = {
+		{ lightPos, lightColor, constant, linear, quadratic }
+	};
+
+	Light light(lightPos, lightColor);
+	light.Initialize();
+
+	Shader lightingShader(".\\LightingShader.vert", ".\\LightingShader.frag");
+
+	float cubeVertices[] = {
+	-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+	 0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+	 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+	 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+	-0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+	-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+
+	-0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+	 0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+	 0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+	 0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+	-0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+	-0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+
+	-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+	-0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+	-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+	-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+	-0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+	-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+
+	 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+	 0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+	 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+	 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+	 0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+	 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+
+	-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+	 0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+	 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+	 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+	-0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+	-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+
+	-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
+	 0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
+	 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+	 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+	-0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+	-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f
+	};
+
+	unsigned int lightingVAO, lightingVBO;
+	glGenBuffers(1, &lightingVBO);
+	glGenVertexArrays(1, &lightingVAO);
+	glBindVertexArray(lightingVAO);
+	
+	glBindBuffer(GL_ARRAY_BUFFER, lightingVBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(cubeVertices), cubeVertices, GL_STATIC_DRAW);
+
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+	glEnableVertexAttribArray(0);
+    glEnableVertexAttribArray(1);
+
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
 
 	while (!glfwWindowShouldClose(window)) {
 		// Time 
@@ -180,10 +259,46 @@ int main() {
 		// Render the rollercoaster
 		rollerCoaster.Render(projection, view);
 
-		// Render the cart
+    // Render the cart
 		cart.Update(deltaTime);
 		cart.Render(projection, view);
 
+
+		light.Update(currentFrame);
+
+		// Should be changed when placing multiple lights/lamps (right now only one cube as lightsource)
+		lights[0].position = light.position;
+		lights[0].color = light.color;
+
+		light.Render(projection, view);
+
+		lightingShader.use();
+		lightingShader.setInt("numLights", lights.size());
+		for (size_t i = 0; i < lights.size(); ++i) {
+			std::string idx = std::to_string(i);
+			lightingShader.setVec3("lights[" + idx + "].position", lights[i].position);
+			lightingShader.setVec3("lights[" + idx + "].color", lights[i].color);
+			lightingShader.setFloat("lights[" + idx + "].constant", lights[i].constant);
+			lightingShader.setFloat("lights[" + idx + "].linear", lights[i].linear);
+			lightingShader.setFloat("lights[" + idx + "].quadratic", lights[i].quadratic);
+		}
+
+		lightingShader.setVec3("objectColor", 1.0f, 0.5f, 0.31f);
+		lightingShader.setVec3("viewPos", camera.Position);
+
+		lightingShader.setMat4("projection", projection);
+		lightingShader.setMat4("view", view);
+
+		glm::mat4 lightingModel = glm::mat4(1.0f);
+		lightingModel = glm::translate(lightingModel, glm::vec3(0.0f, 100.0f, 0.0f));
+		lightingShader.setMat4("model", lightingModel);
+
+		glBindVertexArray(lightingVAO);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+
+		// Render the heightmap
+		glm::mat4 heightmapModel = glm::mat4(1.0f);
+		heightmap.Render(projection, view, heightmapModel);
 
 		glfwPollEvents();
 		glfwSwapBuffers(window);
@@ -191,6 +306,9 @@ int main() {
 
 	// Clean up
 	rollerCoaster.CleanUp();
+
+	glDeleteBuffers(1, &lightingVBO);
+	glDeleteVertexArrays(1, &lightingVAO);
 
 	glfwTerminate();
 	return 0;

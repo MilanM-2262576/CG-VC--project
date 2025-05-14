@@ -3,7 +3,17 @@
 Heightmap::Heightmap(const std::string& heightmapPath, const std::string& texturePath, float yScale, float yShift) {
     LoadHeightmap(heightmapPath, yScale, yShift);
     GenerateBuffers();
-    textureID = LoadTexture(texturePath);
+
+    // Derive texture paths from texturePath base
+    std::string sandPath = texturePath + "/sand.jpg";
+    std::string grassPath = texturePath + "/grass.jpg";
+    std::string rockPath = texturePath + "/rock.jpg";
+    std::string snowPath = texturePath + "/snow.jpg";
+
+    sandTextureID = LoadTexture(sandPath);
+    grassTextureID = LoadTexture(grassPath);
+    rockTextureID = LoadTexture(rockPath);
+    snowTextureID = LoadTexture(snowPath);
 }
 
 Heightmap::~Heightmap() {
@@ -20,6 +30,11 @@ void Heightmap::LoadHeightmap(const std::string& heightmapPath, float yScale, fl
         return;
     }
 
+    std::vector<unsigned char> heightData(width * height);
+    for (int i = 0; i < width * height; ++i) {
+        heightData[i] = data[i * nChannels];
+    }
+
     for (unsigned int i = 0; i < height; ++i) {
         for (unsigned int j = 0; j < width; ++j) {
             unsigned char* texel = data + (j + width * i) * nChannels;
@@ -31,9 +46,15 @@ void Heightmap::LoadHeightmap(const std::string& heightmapPath, float yScale, fl
             vertices.push_back(-height / 2.0f + i);            // v.z
 
             // Texture coordinates
-            float tilingFactor = 50.0f; // Used to increase amount of textures uses
+            float tilingFactor = 60.0f; // Used to increase amount of textures uses
             vertices.push_back((float)j / (width - 1) * tilingFactor);        // u
             vertices.push_back((float)i / (height - 1) * tilingFactor);       // v
+
+            // Normal
+            glm::vec3 normal = computeNormal(j, i, width, height, heightData, yScale, yShift);
+            vertices.push_back(normal.x);
+            vertices.push_back(normal.y);
+            vertices.push_back(normal.z);
         }
     }
 
@@ -51,6 +72,22 @@ void Heightmap::LoadHeightmap(const std::string& heightmapPath, float yScale, fl
     stbi_image_free(data);
 }
 
+glm::vec3 Heightmap::computeNormal(int x, int z, int width, int height, const std::vector<unsigned char >& heightData, float yScale, float yShift) {
+    auto getHeight = [&](int i, int j) -> float {
+        i = glm::clamp(i, 0, width - 1);
+        j = glm::clamp(j, 0, height - 1);
+        return static_cast<float>(heightData[j * width + i]) * yScale - yShift;
+        };
+
+    float hl = getHeight(x - 1, z);
+    float hr = getHeight(x + 1, z);
+    float hd = getHeight(x, z - 1);
+    float hu = getHeight(x, z + 1);
+
+    glm::vec3 normal = glm::normalize(glm::vec3(hl - hr, 2.0f, hd - hu));
+    return normal;
+}
+
 void Heightmap::GenerateBuffers() {
     glGenVertexArrays(1, &VAO);
     glBindVertexArray(VAO);
@@ -59,11 +96,17 @@ void Heightmap::GenerateBuffers() {
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), &vertices[0], GL_STATIC_DRAW);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+    // Position
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+    // Texture coordinates
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
+
+    // Normal
+    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(5 * sizeof(float)));
+    glEnableVertexAttribArray(2);
 
     glGenBuffers(1, &EBO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
@@ -103,13 +146,24 @@ unsigned int Heightmap::LoadTexture(const std::string& path) {
 void Heightmap::Render(const glm::mat4& projection, const glm::mat4& view, const glm::mat4& model) {
     Shader heightmapShader(".\\heightmapShader.vert", ".\\heightmapShader.frag");
     heightmapShader.use();
-    heightmapShader.setInt("heightmapTexture", 0);
+
+    heightmapShader.setInt("sandTexture", 0);
+    heightmapShader.setInt("grassTexture", 1);
+    heightmapShader.setInt("rockTexture", 2);
+    heightmapShader.setInt("snowTexture", 3);
+
     heightmapShader.setMat4("projection", projection);
     heightmapShader.setMat4("view", view);
     heightmapShader.setMat4("model", model);
 
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, textureID);
+    glBindTexture(GL_TEXTURE_2D, sandTextureID);
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, grassTextureID);
+    glActiveTexture(GL_TEXTURE2);
+    glBindTexture(GL_TEXTURE_2D, rockTextureID);
+    glActiveTexture(GL_TEXTURE3);
+    glBindTexture(GL_TEXTURE_2D, snowTextureID);
 
     glBindVertexArray(VAO);
     for (unsigned int strip = 0; strip < numStrips; ++strip) {
