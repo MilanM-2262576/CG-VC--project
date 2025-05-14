@@ -1,33 +1,52 @@
 #version 330 core
-out vec4 FragColor;
+#define MAX_LIGHTS 4
+
+struct PointLight {
+    vec3 position;
+    vec3 color;
+    float constant;
+    float linear;
+    float quadratic;
+};
+
+uniform int numLights;
+uniform PointLight lights[MAX_LIGHTS];
 
 in vec3 FragPos;
 in vec3 Normal;
-
-uniform vec3 lightPos;
-uniform vec3 lightColor;
 uniform vec3 objectColor;
 uniform vec3 viewPos;
 
+out vec4 FragColor;
+
 void main() {
-	// Ambient
-	float ambientStrength = 0.1f;
-	vec3 ambient = ambientStrength * lightColor;
+    vec3 norm = normalize(Normal);
+    vec3 viewDir = normalize(viewPos - FragPos);
+    vec3 result = vec3(0.0);
 
-	// Diffuse
-	vec3 norm = normalize(Normal);
-	vec3 lightDir = normalize(lightPos - FragPos);
-	float diff = max(dot(norm, lightDir), 0.0f);
-	vec3 diffuse = diff * lightColor;
+    for (int i = 0; i < numLights; ++i) {
+        // Attenuation
+        float distance = length(lights[i].position - FragPos);
+        float attenuation = 1.0 / (lights[i].constant + lights[i].linear * distance + lights[i].quadratic * (distance * distance));
 
-	// Specular
-	float specularStrength = 0.5f;
-	vec3 viewDir = normalize(viewPos - FragPos);
-	vec3 reflectDir = reflect(-lightDir, norm);
+        // Ambient
+        float ambientStrength = 0.1;
+        vec3 ambient = ambientStrength * lights[i].color * objectColor;
 
-	float spec = pow(max(dot(viewDir, reflectDir), 0.0f), 32);
-	vec3 specular = specularStrength  * spec * lightColor;
+        // Diffuse
+        vec3 lightDir = normalize(lights[i].position - FragPos);
+        float diff = max(dot(norm, lightDir), 0.0);
+        vec3 diffuse = diff * lights[i].color * objectColor;
 
-	vec3 resultColor = (ambient + diffuse + specular) * objectColor;
-	FragColor = vec4(resultColor, 1.0f);
+        // Specular
+        float specularStrength = 0.5;
+        vec3 reflectDir = reflect(-lightDir, norm);
+        float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32);
+        vec3 specular = specularStrength * spec * lights[i].color;
+
+        // Sum and apply attenuation
+        result += attenuation * (ambient + diffuse + specular);
+    }
+
+    FragColor = vec4(result, 1.0);
 }

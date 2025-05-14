@@ -3,6 +3,14 @@
 #include <glm/glm.hpp>
 #include "Shader.h"
 
+struct PointLight {
+    glm::vec3 position;
+    glm::vec3 color;
+    float constant;
+    float linear;
+    float quadratic;
+};
+
 class Light {
 public:
     glm::vec3 position;

@@ -71,11 +71,21 @@ void Light::Initialize() {
 }
 
 void Light::Update(float time) {
-    // Example: Circular motion
-    float radius = 5.0f;
+    // Move in a circular path around the origin (other cube) and oscillate distance
+    float minDistance = 2.0f;
+    float maxDistance = 8.0f;
     float speed = 1.0f;
-    position.x = sin(time * speed) * radius;
-    position.z = cos(time * speed) * radius;
+    float orbitSpeed = 0.7f; // angular speed for orbiting
+    float range = (maxDistance - minDistance) / 2.0f;
+    float mid = (maxDistance + minDistance) / 2.0f;
+
+    // Calculate current distance from center (oscillate)
+    float distance = mid + sin(time * speed) * range;
+
+    // Calculate orbit position (circle in XZ plane)
+    float angle = time * orbitSpeed;
+    position.x = cos(angle) * distance;
+    position.z = sin(angle) * distance;
 }
 
 void Light::Render(const glm::mat4& projection, const glm::mat4& view) {

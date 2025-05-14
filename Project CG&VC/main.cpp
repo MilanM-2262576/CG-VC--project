@@ -35,6 +35,11 @@ float lastFrame = 0.0f;
 glm::vec3 lightPos(1.2f, 101.0f, 2.0f);
 glm::vec3 lightColor(1.0f, 1.0f, 1.0f);
 
+// Floats deciding how quickly the light fades over a distance
+float constant = 1.0f;
+float linear = 0.09f;
+float quadratic = 0.032f;
+
 //functions
 void processInput(GLFWwindow* window);
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
@@ -91,7 +96,11 @@ int main() {
 	Shader bezierShader(".\\BezierShader.vert", ".\\BezierShader.frag");
 
 	// Create Heightmap
-	Heightmap heightmap(".\\heightmap.png", ".\\sand.jpg", 64.0f / 256.0f, 16.0f);
+	Heightmap heightmap(".\\heightmap.jpeg", ".\\textures", 64.0f / 256.0f, 16.0f);
+
+	std::vector<PointLight> lights = {
+		{ lightPos, lightColor, constant, linear, quadratic }
+	};
 
 	Light light(lightPos, lightColor);
 	light.Initialize();
@@ -178,9 +187,6 @@ int main() {
 		glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 10000.0f);
 		glm::mat4 view = camera.GetViewMatrix();
 
-		glm::mat4 heightmapModel = glm::mat4(1.0f);
-		heightmap.Render(projection, view, heightmapModel);
-
 		// Render de Bézier-curve
 		bezierShader.use();
 		bezierShader.setMat4("projection", projection);
@@ -196,13 +202,25 @@ int main() {
 		glDrawArrays(GL_LINE_STRIP, 0, combinedCurvePoints.size());
 
 		light.Update(currentFrame);
+
+		// Should be changed when placing multiple lights/lamps (right now only one cube as lightsource)
+		lights[0].position = light.position;
+		lights[0].color = light.color;
+
 		light.Render(projection, view);
-		lightPos = light.position;
 
 		lightingShader.use();
+		lightingShader.setInt("numLights", lights.size());
+		for (size_t i = 0; i < lights.size(); ++i) {
+			std::string idx = std::to_string(i);
+			lightingShader.setVec3("lights[" + idx + "].position", lights[i].position);
+			lightingShader.setVec3("lights[" + idx + "].color", lights[i].color);
+			lightingShader.setFloat("lights[" + idx + "].constant", lights[i].constant);
+			lightingShader.setFloat("lights[" + idx + "].linear", lights[i].linear);
+			lightingShader.setFloat("lights[" + idx + "].quadratic", lights[i].quadratic);
+		}
+
 		lightingShader.setVec3("objectColor", 1.0f, 0.5f, 0.31f);
-		lightingShader.setVec3("lightColor", lightColor);
-		lightingShader.setVec3("lightPos", lightPos);
 		lightingShader.setVec3("viewPos", camera.Position);
 
 		lightingShader.setMat4("projection", projection);
@@ -214,6 +232,10 @@ int main() {
 
 		glBindVertexArray(lightingVAO);
 		glDrawArrays(GL_TRIANGLES, 0, 36);
+
+		// Render the heightmap
+		glm::mat4 heightmapModel = glm::mat4(1.0f);
+		heightmap.Render(projection, view, heightmapModel);
 
 		glfwPollEvents();
 		glfwSwapBuffers(window);
