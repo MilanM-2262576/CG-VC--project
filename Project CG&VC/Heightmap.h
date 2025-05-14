@@ -4,6 +4,7 @@
 #include <glm/glm.hpp>
 
 #include "Shader.h"
+#include "Light.h"
 #include "stb_image.h"
 
 #include <iostream>
@@ -21,11 +22,12 @@ private:
 	void LoadHeightmap(const std::string& heightmapPath, float yScale, float yShift);
 	void GenerateBuffers();
 	unsigned int LoadTexture(const std::string& path);
+	glm::vec3 computeNormal(int x, int z, int width, int height, 
+							const std::vector<unsigned char >& heightData, float yScale, float yShift);
 
 	unsigned int VAO, VBO, EBO;
-	unsigned int textureID;
+	unsigned int sandTextureID, grassTextureID, rockTextureID, snowTextureID;
 	std::vector<float> vertices;
 	std::vector<unsigned int> indices;
-	unsigned int numStrips;
-	unsigned int numVertsPerStrip;
+	unsigned int numStrips, numVertsPerStrip;
 };
