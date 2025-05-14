@@ -6,9 +6,11 @@
 * Constructor for the BezierCurve class
 * initializes the controlPoints
 */
-BezierCurve::BezierCurve(const std::vector<glm::vec3>& controlPoints) : m_controlPoints(controlPoints) {
+BezierCurve::BezierCurve(const std::vector<glm::vec3>& controlPoints) {
     if (controlPoints.size() != 4)
         throw std::runtime_error("BezierCurve requires exactly 4 control points.");
+
+    m_controlPoints = controlPoints;
 }
 
 /*
@@ -64,8 +66,12 @@ std::vector<glm::vec3> BezierCurve::GeneratePoints(int resolution) {
     return m_curvePoints;
 }
 
-/* ---- WERKT MAAR GEEN FORWARD DIFFERENCE WEL BRUTE FORCE PUNT PER PUNT BEREKENEN
+
 glm::vec3 BezierCurve::GetPoint(float t) const {
+    if (m_controlPoints.size() != 4) {
+        throw std::runtime_error("GetPoint only supports cubic Bézier curves (4 control points).");
+    }
+
     float u = 1.0f - t;
     float tt = t * t;
     float uu = u * u;
@@ -80,12 +86,3 @@ glm::vec3 BezierCurve::GetPoint(float t) const {
     return point;
 }
 
-std::vector<glm::vec3> BezierCurve::GeneratePoints(int resolution) const {
-    std::vector<glm::vec3> points;
-    for (int i = 0; i <= resolution; ++i) {
-        float t = static_cast<float>(i) / resolution;
-        points.push_back(GetPoint(t));
-    }
-    return points;
-}
-*/
