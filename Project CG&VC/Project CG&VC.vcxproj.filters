@@ -46,6 +46,8 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Cart.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="Light.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -73,6 +75,8 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Cart.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="Light.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -99,7 +103,6 @@
     <None Include="Cart.vert">
       <Filter>Source Files\Shaders</Filter>
     </None>
-    <None Include="Cart.frag">
     <None Include="LightSourceShader.frag">
       <Filter>Source Files\Shaders</Filter>
     </None>
@@ -110,6 +113,9 @@
       <Filter>Source Files\Shaders</Filter>
     </None>
     <None Include="LightingShader.vert">
+      <Filter>Source Files\Shaders</Filter>
+    </None>
+    <None Include="Cart.frag">
       <Filter>Source Files\Shaders</Filter>
     </None>
   </ItemGroup>
