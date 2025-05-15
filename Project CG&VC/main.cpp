@@ -8,6 +8,7 @@
 #include "Camera.h"
 #include "Shader.h"
 #include "Heightmap.h"
+#include "Water.h"
 #include "BezierCurve.h"
 #include "Rollercoaster.h"
 #include "Cart.h"
@@ -53,7 +54,6 @@ int main() {
 	GLFWwindow* window = InitializeGLFW();
 	if (!window) { return -1; }
 
-
 	std::vector<std::vector<glm::vec3>> bezierSegments = {
 		// Start links-voor
 		{
@@ -85,13 +85,15 @@ int main() {
 		}
 	};
 
-
 	RollerCoaster rollerCoaster(bezierSegments, 0.5f, 16); // Create a rollercoaster
 
 	Cart cart(&rollerCoaster, 0.5f); // Create a cart
 
 	// Create Heightmap
 	Heightmap heightmap(".\\heightmap.jpeg", ".\\textures", 64.0f / 256.0f, 16.0f);
+
+	// Create water plane
+	Water water(0.0f, ".\\heightmap.jpeg");
 
 	std::vector<PointLight> lights = {
 		{ lightPos, lightColor, constant, linear, quadratic }
@@ -189,7 +191,6 @@ int main() {
 		cart.Update(deltaTime);
 		cart.Render(projection, view);
 
-
 		light.Update(currentFrame);
 
 		// Should be changed when placing multiple lights/lamps (right now only one cube as lightsource)
@@ -225,6 +226,8 @@ int main() {
 		// Render the heightmap
 		glm::mat4 heightmapModel = glm::mat4(1.0f);
 		heightmap.Render(projection, view, heightmapModel);
+
+		water.Render(projection, view);
 
 		glfwPollEvents();
 		glfwSwapBuffers(window);
@@ -314,7 +317,6 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 	glViewport(0, 0, width, height);
 }
-
 
 // This method loads the texture from the given path
 unsigned int loadTexture(const char* path) {

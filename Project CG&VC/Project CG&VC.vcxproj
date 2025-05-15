@@ -148,6 +148,7 @@
     <ClCompile Include="Rollercoaster.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="stb_image.cpp" />
+    <ClCompile Include="Water.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BezierCurve.h" />
@@ -159,6 +160,7 @@
     <ClInclude Include="Rollercoaster.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="stb_image.h" />
+    <ClInclude Include="Water.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="BezierShader.frag" />
@@ -173,10 +175,16 @@
     <None Include="HeightmapShader.vert" />
     <None Include="LightingShader.frag" />
     <None Include="LightingShader.vert" />
+    <None Include="WaterShader.frag" />
+    <None Include="WaterShader.vert" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="grass.jpg" />
     <Image Include="heightmap.png" />
+    <Image Include="textures\rock.jpg" />
+    <Image Include="textures\sand.jpg" />
+    <Image Include="textures\snow.jpg" />
+    <Image Include="textures\water.jpg" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

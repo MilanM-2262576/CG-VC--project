@@ -18,7 +18,7 @@ void main() {
 
     // Calculate blend factors based on height
     float h = Height;
-    float sandWeight = clamp(1.0 - abs(h - 0.0) / 10.0, 0.0, 1.0);
+    float sandWeight = h <= 0 ? 1.0 : clamp(1.0 - abs(h - 0.0) / 10.0, 0.0, 1.0);
     float grassWeight = clamp(1.0 - abs(h - 10.0) / 10.0, 0.0, 1.0);
     float rockWeight = clamp(1.0 - abs(h - 20.0) / 10.0, 0.0, 1.0);
     float snowWeight = h >= 30.0 ? 1.0 : clamp(1.0 - abs(h - 30.0) / 10.0, 0.0, 1.0);
