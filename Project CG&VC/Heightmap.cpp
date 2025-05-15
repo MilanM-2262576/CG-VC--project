@@ -10,10 +10,10 @@ Heightmap::Heightmap(const std::string& heightmapPath, const std::string& textur
     std::string rockPath = texturePath + "/rock.jpg";
     std::string snowPath = texturePath + "/snow.jpg";
 
-    sandTextureID = LoadTexture(sandPath);
-    grassTextureID = LoadTexture(grassPath);
-    rockTextureID = LoadTexture(rockPath);
-    snowTextureID = LoadTexture(snowPath);
+    sandTextureID = Utilities::loadTexture(sandPath);
+    grassTextureID = Utilities::loadTexture(grassPath);
+    rockTextureID = Utilities::loadTexture(rockPath);
+    snowTextureID = Utilities::loadTexture(snowPath);
 }
 
 Heightmap::~Heightmap() {
@@ -113,34 +113,6 @@ void Heightmap::GenerateBuffers() {
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices[0], GL_STATIC_DRAW);
 
     glBindVertexArray(0);
-}
-
-unsigned int Heightmap::LoadTexture(const std::string& path) {
-    unsigned int textureID;
-    glGenTextures(1, &textureID);
-
-    int width, height, nrComponents;
-    unsigned char* data = stbi_load(path.c_str(), &width, &height, &nrComponents, 0);
-    if (data) {
-        GLenum format = (nrComponents == 1) ? GL_RED : (nrComponents == 3) ? GL_RGB : GL_RGBA;
-
-        glBindTexture(GL_TEXTURE_2D, textureID);
-        glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
-        glGenerateMipmap(GL_TEXTURE_2D);
-
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-        stbi_image_free(data);
-    }
-    else {
-        std::cerr << "Failed to load texture: " << path << std::endl;
-        stbi_image_free(data);
-    }
-
-    return textureID;
 }
 
 void Heightmap::Render(const glm::mat4& projection, const glm::mat4& view, const glm::mat4& model) {

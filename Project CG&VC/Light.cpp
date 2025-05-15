@@ -47,7 +47,7 @@ float cubeVertices[] = {
 };
 
 Light::Light(const glm::vec3& position, const glm::vec3& color)
-    : position(position), color(color), lightShader(".\\LightSourceShader.vert", ".\\LightSourceShader.frag") {
+    : position(position), color(color), initialPosition(position), lightShader(".\\LightSourceShader.vert", ".\\LightSourceShader.frag") {
 }
 
 Light::~Light() {
@@ -70,22 +70,22 @@ void Light::Initialize() {
     glBindVertexArray(0);
 }
 
+// In case we want to move the lights
 void Light::Update(float time) {
-    // Move in a circular path around the origin (other cube) and oscillate distance
-    float minDistance = 2.0f;
-    float maxDistance = 8.0f;
-    float speed = 1.0f;
-    float orbitSpeed = 0.7f; // angular speed for orbiting
-    float range = (maxDistance - minDistance) / 2.0f;
-    float mid = (maxDistance + minDistance) / 2.0f;
+    /*// Animate each light around its own initial position
+    float orbitRadius = 2.0f; // How far from the initial position to orbit
+    float orbitSpeed = 1.0f;  // Angular speed
 
-    // Calculate current distance from center (oscillate)
-    float distance = mid + sin(time * speed) * range;
+    // Optional: use a unique phase for each light based on its initial position
+    float phase = initialPosition.x + initialPosition.z;
 
-    // Calculate orbit position (circle in XZ plane)
-    float angle = time * orbitSpeed;
-    position.x = cos(angle) * distance;
-    position.z = sin(angle) * distance;
+    float angle = time * orbitSpeed + phase;
+
+    // Orbit in XZ plane around initialPosition
+    position.x = initialPosition.x + cos(angle) * orbitRadius;
+    position.z = initialPosition.z + sin(angle) * orbitRadius;
+    // Keep Y at initial height
+    position.y = initialPosition.y;*/
 }
 
 void Light::Render(const glm::mat4& projection, const glm::mat4& view) {
@@ -96,7 +96,7 @@ void Light::Render(const glm::mat4& projection, const glm::mat4& view) {
 
     glm::mat4 model = glm::mat4(1.0f);
     model = glm::translate(model, position);
-    model = glm::scale(model, glm::vec3(0.2f));
+    model = glm::scale(model, glm::vec3(0.5f));
     lightShader.setMat4("model", model);
 
     glBindVertexArray(VAO);

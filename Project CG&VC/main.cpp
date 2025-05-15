@@ -13,14 +13,11 @@
 #include "Rollercoaster.h"
 #include "Cart.h"
 #include "Light.h"
+#include "Utilities.h"
 
 // Screen size
 const unsigned int SCR_WIDTH = 1920;
 const unsigned int SCR_HEIGHT = 1080;
-
-//Grass
-unsigned int loadTexture(const char* path);
-
 
 //Camera
 Camera camera(glm::vec3(0.0f, 100.0f, 3.0f)); // Pretty high for now so you can see the heightmap better
@@ -33,13 +30,24 @@ float deltaTime = 0.0f;	// time between current frame and last frame
 float lastFrame = 0.0f;
 
 // lighting
-glm::vec3 lightPos(1.2f, 101.0f, 2.0f);
-glm::vec3 lightColor(1.0f, 1.0f, 1.0f);
+std::vector<glm::vec3> lightPos = {
+	{ 20.0f, 75.0f, 0.0f },
+	{ 110.0f, 35.0f, 110.0f },
+	{ 110.0f, 35.0f, -110.0f },
+	{ -110.0f, 35.0f, -110.0f },
+};
+
+std::vector<glm::vec3> lightColor = {
+	{ 1.0f, 0.5f, 0.0f }, // Orange
+	{ 0.0f, 1.0f, 1.0f }, // Cyan
+	{ 1.0f, 0.0f, 1.0f }, // Magenta
+	{ 0.2f, 1.0f, 0.2f }  // Bright green
+};
 
 // Floats deciding how quickly the light fades over a distance
 float constant = 1.0f;
-float linear = 0.09f;
-float quadratic = 0.032f;
+float linear = 0.004f;
+float quadratic = 0.00012f;
 
 //functions
 void processInput(GLFWwindow* window);
@@ -85,9 +93,11 @@ int main() {
 		}
 	};
 
+	// Create the rollercoaster
 	RollerCoaster rollerCoaster(bezierSegments, 0.5f, 16); // Create a rollercoaster
 
-	Cart cart(&rollerCoaster, 0.5f); // Create a cart
+	// Create a cart
+	Cart cart(&rollerCoaster, 0.2f); // Create a cart
 
 	// Create Heightmap
 	Heightmap heightmap(".\\heightmap.jpeg", ".\\textures", 64.0f / 256.0f, 16.0f);
@@ -95,74 +105,18 @@ int main() {
 	// Create water plane
 	Water water(0.0f, ".\\heightmap.jpeg");
 
-	std::vector<PointLight> lights = {
-		{ lightPos, lightColor, constant, linear, quadratic }
-	};
+	// Create lights
+	std::vector<PointLight> pointLights;
+	std::vector<Light> lights;
+	for (size_t i = 0; i < lightPos.size() && lightColor.size(); ++i) {
+		pointLights.push_back({ lightPos[i], lightColor[i], constant, linear, quadratic });
+		lights.emplace_back(lightPos[i], lightColor[i]);
+	}
 
-	Light light(lightPos, lightColor);
-	light.Initialize();
-
-	Shader lightingShader(".\\LightingShader.vert", ".\\LightingShader.frag");
-
-	float cubeVertices[] = {
-	-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-	 0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-	 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-	 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-	-0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-	-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-
-	-0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
-	 0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
-	 0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
-	 0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
-	-0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
-	-0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
-
-	-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
-	-0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
-	-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
-	-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
-	-0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
-	-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
-
-	 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
-	 0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
-	 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
-	 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
-	 0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
-	 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
-
-	-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
-	 0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
-	 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
-	 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
-	-0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
-	-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
-
-	-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
-	 0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
-	 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-	 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-	-0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-	-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f
-	};
-
-	unsigned int lightingVAO, lightingVBO;
-	glGenBuffers(1, &lightingVBO);
-	glGenVertexArrays(1, &lightingVAO);
-	glBindVertexArray(lightingVAO);
-	
-	glBindBuffer(GL_ARRAY_BUFFER, lightingVBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(cubeVertices), cubeVertices, GL_STATIC_DRAW);
-
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
-	glEnableVertexAttribArray(0);
-    glEnableVertexAttribArray(1);
-
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindVertexArray(0);
+	// Initialize the lights
+	for (size_t i = 0; i < lights.size(); ++i) {
+		lights[i].Initialize();
+	}
 
 	while (!glfwWindowShouldClose(window)) {
 		// Time 
@@ -184,60 +138,38 @@ int main() {
 		glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 10000.0f);
 		glm::mat4 view = camera.GetViewMatrix();
 
+		// Update and render the lightsources
+		for (size_t i = 0; i < lights.size(); ++i) {
+			lights[i].Update(currentFrame);
+		}
+
+		for (size_t i = 0; i < pointLights.size() && i < lights.size(); ++i) {
+			pointLights[i].position = lights[i].position;
+			pointLights[i].color = lights[i].color;
+			lights[i].Render(projection, view);
+		}
+
 		// Render the rollercoaster
 		rollerCoaster.Render(projection, view);
 
 		// Render the cart
 		cart.Update(deltaTime);
-		cart.Render(projection, view);
-
-		light.Update(currentFrame);
-
-		// Should be changed when placing multiple lights/lamps (right now only one cube as lightsource)
-		lights[0].position = light.position;
-		lights[0].color = light.color;
-
-		light.Render(projection, view);
-
-		lightingShader.use();
-		lightingShader.setInt("numLights", lights.size());
-		for (size_t i = 0; i < lights.size(); ++i) {
-			std::string idx = std::to_string(i);
-			lightingShader.setVec3("lights[" + idx + "].position", lights[i].position);
-			lightingShader.setVec3("lights[" + idx + "].color", lights[i].color);
-			lightingShader.setFloat("lights[" + idx + "].constant", lights[i].constant);
-			lightingShader.setFloat("lights[" + idx + "].linear", lights[i].linear);
-			lightingShader.setFloat("lights[" + idx + "].quadratic", lights[i].quadratic);
-		}
-
-		lightingShader.setVec3("objectColor", 1.0f, 0.5f, 0.31f);
-		lightingShader.setVec3("viewPos", camera.Position);
-
-		lightingShader.setMat4("projection", projection);
-		lightingShader.setMat4("view", view);
-
-		glm::mat4 lightingModel = glm::mat4(1.0f);
-		lightingModel = glm::translate(lightingModel, glm::vec3(0.0f, 100.0f, 0.0f));
-		lightingShader.setMat4("model", lightingModel);
-
-		glBindVertexArray(lightingVAO);
-		glDrawArrays(GL_TRIANGLES, 0, 36);
+		cart.Render(projection, view, pointLights, camera.Position);
 
 		// Render the heightmap
 		glm::mat4 heightmapModel = glm::mat4(1.0f);
 		heightmap.Render(projection, view, heightmapModel);
-
+		
+		// Render the water (possible to expand with more details etc.)
 		water.Render(projection, view);
 
+		//Poll for events
 		glfwPollEvents();
 		glfwSwapBuffers(window);
 	}
 
 	// Clean up
 	rollerCoaster.CleanUp();
-
-	glDeleteBuffers(1, &lightingVBO);
-	glDeleteVertexArrays(1, &lightingVAO);
 
 	glfwTerminate();
 	return 0;
@@ -316,39 +248,4 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 // glfw: whenever the window size changed, this callback function executes
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 	glViewport(0, 0, width, height);
-}
-
-// This method loads the texture from the given path
-unsigned int loadTexture(const char* path) {
-	unsigned int textureID;
-	glGenTextures(1, &textureID);
-
-	int width, height, nrComponents;
-	unsigned char* data = stbi_load(path, &width, &height, &nrComponents, 0);
-	if (data) {
-		GLenum format;
-		if (nrComponents == 1)
-			format = GL_RED;
-		else if (nrComponents == 3)
-			format = GL_RGB;
-		else if (nrComponents == 4)
-			format = GL_RGBA;
-
-		glBindTexture(GL_TEXTURE_2D, textureID);
-		glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
-		glGenerateMipmap(GL_TEXTURE_2D);
-
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-		stbi_image_free(data);
-	}
-	else {
-		std::cout << "Failed to load texture: " << path << std::endl;
-		stbi_image_free(data);
-	}
-
-	return textureID;
 }

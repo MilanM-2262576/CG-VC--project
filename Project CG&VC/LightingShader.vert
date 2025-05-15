@@ -1,3 +1,4 @@
+// This shader is used as a template for objects that need to be affected by lighting
 #version 330 core
 layout (location = 0) in vec3 aPos;
 layout (location = 1) in vec3 aNormal;

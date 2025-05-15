@@ -3,9 +3,11 @@
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 
+#include "stb_image.h"
+
 #include "Shader.h"
 #include "Light.h"
-#include "stb_image.h"
+#include "Utilities.h"
 
 #include <iostream>
 #include <vector>
@@ -21,7 +23,6 @@ public:
 private:
 	void LoadHeightmap(const std::string& heightmapPath, float yScale, float yShift);
 	void GenerateBuffers();
-	unsigned int LoadTexture(const std::string& path);
 	glm::vec3 computeNormal(int x, int z, int width, int height, 
 							const std::vector<unsigned char >& heightData, float yScale, float yShift);
 

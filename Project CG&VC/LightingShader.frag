@@ -1,3 +1,4 @@
+// This shader is used as a template for objects that need to be affected by lighting
 #version 330 core
 #define MAX_LIGHTS 4
 
