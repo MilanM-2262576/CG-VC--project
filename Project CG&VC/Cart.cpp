@@ -2,7 +2,7 @@
 
 // Constructor
 Cart::Cart(RollerCoaster* coaster, float speed)
-	: m_rollerCoaster(coaster), m_shader(".\\Cart.vert", ".\\Cart.frag"), m_speed(speed), m_t(0.0f), m_currentCurveIndex(0) {
+	: m_rollerCoaster(coaster), m_shader(".\\CartShader.vert", ".\\CartShader.frag"), m_speed(speed), m_t(0.0f), m_currentCurveIndex(0) {
 
 	InitializeBuffers();
 	updatePositionAndDirection();
@@ -75,7 +75,8 @@ void Cart::Render(const glm::mat4& projection, const glm::mat4& view, std::vecto
         m_shader.setFloat("lights[" + index + "].quadratic", pointLights[i].quadratic);
     }
 
-	m_shader.setVec3("objectColor", glm::vec3(1.0, 0.4745, 0.3922)); // rode kleur
+	//m_shader.setVec3("objectColor", glm::vec3(1.0f, 0.4745f, 0.3922f)); // rode kleur
+    m_shader.setVec3("objectColor", glm::vec3(1.0f, 1.0f, 1.0f)); // witte kleur
     m_shader.setVec3("viewPos", cameraPos);
 
 	m_shader.setMat4("projection", projection);

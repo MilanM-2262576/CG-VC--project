@@ -60,6 +60,9 @@
     <ClCompile Include="Utilities.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="SkyBox.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BezierCurve.h">
@@ -95,6 +98,9 @@
     <ClInclude Include="Utilities.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="SkyBox.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="BezierShader.vert">
@@ -115,7 +121,7 @@
     <None Include="HeightmapShader.frag">
       <Filter>Source Files\Shaders</Filter>
     </None>
-    <None Include="Cart.vert">
+    <None Include="CartShader.vert">
       <Filter>Source Files\Shaders</Filter>
     </None>
     <None Include="LightSourceShader.frag">
@@ -130,13 +136,19 @@
     <None Include="LightingShader.vert">
       <Filter>Source Files\Shaders</Filter>
     </None>
-    <None Include="Cart.frag">
+    <None Include="CartShader.frag">
       <Filter>Source Files\Shaders</Filter>
     </None>
     <None Include="WaterShader.vert">
       <Filter>Source Files\Shaders</Filter>
     </None>
     <None Include="WaterShader.frag">
+      <Filter>Source Files\Shaders</Filter>
+    </None>
+    <None Include="SkyBoxShader.vert">
+      <Filter>Source Files\Shaders</Filter>
+    </None>
+    <None Include="SkyBoxShader.frag">
       <Filter>Source Files\Shaders</Filter>
     </None>
   </ItemGroup>

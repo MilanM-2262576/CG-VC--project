@@ -14,6 +14,7 @@
 #include "Cart.h"
 #include "Light.h"
 #include "Utilities.h"
+#include "SkyBox.h"
 
 // Screen size
 const unsigned int SCR_WIDTH = 1920;
@@ -35,19 +36,23 @@ std::vector<glm::vec3> lightPos = {
 	{ 110.0f, 35.0f, 110.0f },
 	{ 110.0f, 35.0f, -110.0f },
 	{ -110.0f, 35.0f, -110.0f },
+	{ 75.0f, 45.0f, 20.0f },
+	{ -10.0f, 45.0f, -90.0f },
 };
 
 std::vector<glm::vec3> lightColor = {
-	{ 1.0f, 0.5f, 0.0f }, // Orange
-	{ 0.0f, 1.0f, 1.0f }, // Cyan
-	{ 1.0f, 0.0f, 1.0f }, // Magenta
-	{ 0.2f, 1.0f, 0.2f }  // Bright green
+	{ 1.0f, 0.5f, 0.0f },	// Orange
+	{ 0.0f, 1.0f, 1.0f },	// Cyan
+	{ 1.0f, 0.0f, 1.0f },	// Magenta
+	{ 0.2f, 1.0f, 0.2f },	// Bright green
+	{ 0.2f, 0.4f, 1.0f },	// Blue
+	{ 1.0f, 1.0f, 0.3f },	// Yellow
 };
 
 // Floats deciding how quickly the light fades over a distance
 float constant = 1.0f;
-float linear = 0.004f;
-float quadratic = 0.00012f;
+float linear = 0.005f;
+float quadratic = 0.00015f;
 
 //functions
 void processInput(GLFWwindow* window);
@@ -55,7 +60,6 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 GLFWwindow* InitializeGLFW();
-
 
 int main() {
 	//Initialize GLFW window
@@ -97,7 +101,7 @@ int main() {
 	RollerCoaster rollerCoaster(bezierSegments, 0.5f, 16); // Create a rollercoaster
 
 	// Create a cart
-	Cart cart(&rollerCoaster, 0.2f); // Create a cart
+	Cart cart(&rollerCoaster, 0.1f); // Create a cart
 
 	// Create Heightmap
 	Heightmap heightmap(".\\heightmap.jpeg", ".\\textures", 64.0f / 256.0f, 16.0f);
@@ -117,6 +121,8 @@ int main() {
 	for (size_t i = 0; i < lights.size(); ++i) {
 		lights[i].Initialize();
 	}
+
+	SkyBox skybox(".\\SkyBoxShader.vert", ".\\SkyBoxShader.frag");
 
 	while (!glfwWindowShouldClose(window)) {
 		// Time 
@@ -162,6 +168,9 @@ int main() {
 		
 		// Render the water (possible to expand with more details etc.)
 		water.Render(projection, view);
+
+		// Render the SkyBox
+		skybox.Render(projection, view);
 
 		//Poll for events
 		glfwPollEvents();
@@ -248,4 +257,34 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 // glfw: whenever the window size changed, this callback function executes
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 	glViewport(0, 0, width, height);
+}
+
+unsigned int loadCubemap(std::vector<std::string> faces)
+{
+	unsigned int textureID;
+	glGenTextures(1, &textureID);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);
+
+	int width, height, nrChannels;
+	for (unsigned int i = 0; i < faces.size(); i++)
+	{
+		unsigned char* data = stbi_load(faces[i].c_str(), &width, &height, &nrChannels, 0);
+		if (data)
+		{
+			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+			stbi_image_free(data);
+		}
+		else
+		{
+			std::cout << "Cubemap texture failed to load at path: " << faces[i] << std::endl;
+			stbi_image_free(data);
+		}
+	}
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+
+	return textureID;
 }
