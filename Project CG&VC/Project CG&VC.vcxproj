@@ -112,12 +112,12 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>..\OpenGL\Include\glfw-3.4\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\OpenGL\Include\assimp;..\OpenGL\Include\glfw-3.4\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>glfw3.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glfw3.lib;opengl32.lib;assimp-vc143-mtd.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -145,6 +145,7 @@
     <ClCompile Include="Heightmap.cpp" />
     <ClCompile Include="Light.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Model.cpp" />
     <ClCompile Include="Rollercoaster.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="stb_image.cpp" />
@@ -156,6 +157,7 @@
     <ClInclude Include="Cart.h" />
     <ClInclude Include="Heightmap.h" />
     <ClInclude Include="Light.h" />
+    <ClInclude Include="Model.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Rollercoaster.h" />
     <ClInclude Include="Shader.h" />
@@ -163,6 +165,7 @@
     <ClInclude Include="Water.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\..\..\kenney_coaster-kit\Models\FBX format\coaster-train-front.fbx" />
     <None Include="BezierShader.frag" />
     <None Include="BezierShader.vert" />
     <None Include="Cart.frag" />
@@ -179,6 +182,7 @@
     <None Include="WaterShader.vert" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="..\..\..\..\kenney_coaster-kit\Models\Textures\colormap.png" />
     <Image Include="grass.jpg" />
     <Image Include="heightmap.png" />
     <Image Include="textures\rock.jpg" />

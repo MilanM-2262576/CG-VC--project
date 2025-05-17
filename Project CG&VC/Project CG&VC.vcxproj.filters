@@ -22,6 +22,9 @@
     <Filter Include="Resource Files\textures">
       <UniqueIdentifier>{0ddb6c14-383d-4087-845a-8a06a2ba90b5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files\models">
+      <UniqueIdentifier>{895b1a48-bb69-4d05-b5f1-286c78be39ee}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="glad.c">
@@ -57,6 +60,9 @@
     <ClCompile Include="Water.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Model.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BezierCurve.h">
@@ -87,6 +93,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Water.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Model.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -133,6 +142,9 @@
     <None Include="WaterShader.frag">
       <Filter>Source Files\Shaders</Filter>
     </None>
+    <None Include="..\..\..\..\kenney_coaster-kit\Models\FBX format\coaster-train-front.fbx">
+      <Filter>Resource Files\models</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="heightmap.png">
@@ -152,6 +164,9 @@
     </Image>
     <Image Include="textures\water.jpg">
       <Filter>Resource Files\textures</Filter>
+    </Image>
+    <Image Include="..\..\..\..\kenney_coaster-kit\Models\Textures\colormap.png">
+      <Filter>Resource Files\models</Filter>
     </Image>
   </ItemGroup>
 </Project>

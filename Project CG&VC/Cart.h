@@ -4,6 +4,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include "Shader.h"
 #include "RollerCoaster.h"
+#include "Model.h"
 
 class Cart {
 public:
@@ -15,6 +16,7 @@ public:
 private:
 	RollerCoaster* m_rollerCoaster;
 	Shader m_shader;
+	Model m_model;
 
 	float m_speed;
 	float m_t;

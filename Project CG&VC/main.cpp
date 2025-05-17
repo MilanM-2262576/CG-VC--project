@@ -12,6 +12,7 @@
 #include "BezierCurve.h"
 #include "Rollercoaster.h"
 #include "Cart.h"
+
 #include "Light.h"
 
 // Screen size
@@ -85,9 +86,10 @@ int main() {
 		}
 	};
 
+
 	RollerCoaster rollerCoaster(bezierSegments, 0.5f, 16); // Create a rollercoaster
 
-	Cart cart(&rollerCoaster, 0.5f); // Create a cart
+	Cart cart(&rollerCoaster, 0.2f); // Create a cart
 
 	// Create Heightmap
 	Heightmap heightmap(".\\heightmap.jpeg", ".\\textures", 64.0f / 256.0f, 16.0f);

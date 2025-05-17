@@ -2,7 +2,7 @@
 
 // Constructor
 Cart::Cart(RollerCoaster* coaster, float speed)
-	: m_rollerCoaster(coaster), m_shader(".\\Cart.vert", ".\\Cart.frag"), m_speed(speed), m_t(0.0f), m_currentCurveIndex(0) {
+	: m_rollerCoaster(coaster), m_model(".\\models\\coaster-train-front.fbx"), m_shader(".\\Cart.vert", ".\\Cart.frag"), m_speed(speed), m_t(0.0f), m_currentCurveIndex(0) {
 
 	InitializeBuffers();
 	updatePositionAndDirection();
@@ -44,36 +44,36 @@ void Cart::updatePositionAndDirection() {
     up = glm::normalize(glm::cross(m_direction, right));
 
     // Apply an offset to position the cart above the curve
-    float heightOffset = 0.5f; // Adjust this value to control the height above the curve
+    float heightOffset = 0.60f; // Adjust this value to control the height above the curve
     m_position += up * heightOffset;
 
 }
 
 // render the cart
 void Cart::Render(const glm::mat4& projection, const glm::mat4& view) {
-	// calculate modelmatrix
-	glm::mat4 model = glm::mat4(1.0f);
-	model = glm::translate(model, m_position);
+	// Calculate orientation matrix
+    glm::mat4 rotation = glm::mat4(1.0f);
+    glm::vec3 up(0.0f, 1.0f, 0.0f);
+    glm::vec3 right = glm::normalize(glm::cross(up, m_direction));
+    up = glm::cross(m_direction, right);
 
-	// calculate rotation 
-	glm::vec3 up(0.0f, 1.0f, 0.0f);
-	glm::vec3 right = glm::normalize(glm::cross(up, m_direction));
-	up = glm::cross(m_direction, right);
-	model[0] = glm::vec4(right, 0.0f);
-	model[1] = glm::vec4(up, 0.0f);
-	model[2] = glm::vec4(m_direction, 0.0f);
+    rotation[0] = glm::vec4(right, 0.0f);
+    rotation[1] = glm::vec4(up, 0.0f);
+    rotation[2] = glm::vec4(-m_direction, 0.0f);
 
-	// init shader
-	m_shader.use();
-	m_shader.setVec3("objectColor", glm::vec3(1.0f, 0.0f, 0.0f)); // rode kleur (uniform voor ev dmv belichting kleur veranderd??? jochen???)
-	m_shader.setMat4("projection", projection);
-	m_shader.setMat4("view", view);
-	m_shader.setMat4("model", model);
+	// compute the model matrix
+    glm::mat4 model = glm::translate(glm::mat4(1.0f), m_position)
+        * rotation
+        * glm::scale(glm::mat4(1.0f), glm::vec3(0.05f, 0.05f, 0.05f));
 
-    // Bind VAO en render
-    glBindVertexArray(VAO);
-    glDrawArrays(GL_TRIANGLES, 0, 36);
-    glBindVertexArray(0);
+	// set the shader uniforms
+    m_shader.use();
+    m_shader.setMat4("projection", projection);
+    m_shader.setMat4("view", view);
+    m_shader.setMat4("model", model);
+
+    m_model.Draw(m_shader);
+
 }
 
 // initialize buffers for the cart

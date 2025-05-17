@@ -1,10 +1,11 @@
 #version 330 core
 
-out vec4 FragColor; 
+out vec4 FragColor;
 
-uniform vec3 objectColor;
+in vec2 TexCoords;
+uniform sampler2D colormap;
 
 void main()
 {
-    FragColor = vec4(objectColor, 1.0); // Alpha = 1.0 (volledig ondoorzichtig)
+    FragColor = texture(colormap, TexCoords);
 }
