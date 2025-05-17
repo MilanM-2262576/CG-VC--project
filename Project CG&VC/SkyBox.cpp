@@ -94,6 +94,8 @@ void SkyBox::Render(const glm::mat4& projection, const glm::mat4& view) {
 }
 
 unsigned int SkyBox::loadCubemap(const std::vector<std::string>& faces) {
+    stbi_set_flip_vertically_on_load(false);
+
     unsigned int textureID;
     glGenTextures(1, &textureID);
     glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);

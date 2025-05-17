@@ -191,6 +191,13 @@
     <Image Include="..\..\..\..\kenney_coaster-kit\Models\Textures\colormap.png" />
     <Image Include="grass.jpg" />
     <Image Include="heightmap.png" />
+    <Image Include="models\lamp\Textures\untitled_Material.001_BaseColor.png" />
+    <Image Include="skybox\back.jpg" />
+    <Image Include="skybox\bottom.jpg" />
+    <Image Include="skybox\front.jpg" />
+    <Image Include="skybox\left.jpg" />
+    <Image Include="skybox\right.jpg" />
+    <Image Include="skybox\top.jpg" />
     <Image Include="textures\rock.jpg" />
     <Image Include="textures\sand.jpg" />
     <Image Include="textures\snow.jpg" />

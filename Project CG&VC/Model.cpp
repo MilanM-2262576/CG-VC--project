@@ -8,6 +8,10 @@
 #include "stb_image.h"
 
 Model::Model(const std::string& path) {
+    // Extract directory from path
+    size_t lastSlash = path.find_last_of("/\\");
+    m_directory = (lastSlash == std::string::npos) ? "" : path.substr(0, lastSlash + 1);
+
     Assimp::Importer importer;
     const aiScene* scene = importer.ReadFile(path,
         aiProcess_Triangulate |
@@ -87,17 +91,25 @@ Model::Model(const std::string& path) {
 
     glBindVertexArray(0);
 
-    //Texture automatisch inladen
+    std::cout << "In model constructor" << std::endl;
+
+    // Load texture from model material if available
     textureID = 0;
     if (scene->mNumMaterials > 0) {
+        std::cout << "In model constructor's if" << std::endl;
         aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
         if (material->GetTextureCount(aiTextureType_DIFFUSE) > 0) {
             aiString str;
             material->GetTexture(aiTextureType_DIFFUSE, 0, &str);
-            std::string fullTexPath = ".\\models\\colormap.png";
-            textureID = LoadTexture(fullTexPath.c_str());
+
+            std::string texName = str.C_Str();
+            std::string texPath = m_directory + texName;
+
+            textureID = LoadTexture(texPath.c_str());
+            std::cout << texPath << std::endl;
         }
     }
+    
 }
 
 unsigned int Model::LoadTexture(const char* path) {

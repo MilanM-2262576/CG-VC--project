@@ -6,6 +6,9 @@ unsigned int Utilities::loadTexture(std::string path) {
 	glGenTextures(1, &textureID);
 
 	int width, height, nrComponents;
+
+	stbi_set_flip_vertically_on_load(false);
+
 	unsigned char* data = stbi_load(path.c_str(), &width, &height, &nrComponents, 0);
 	if (data) {
 		GLenum format;

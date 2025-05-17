@@ -34,9 +34,9 @@ float lastFrame = 0.0f;
 // lighting
 std::vector<glm::vec3> lightPos = {
 	{ 20.0f, 75.0f, 0.0f },
-	{ 110.0f, 35.0f, 110.0f },
+	{ 110.0f, 40.0f, 110.0f },
 	{ 110.0f, 35.0f, -110.0f },
-	{ -110.0f, 35.0f, -110.0f },
+	{ -110.0f, 40.0f, -110.0f },
 	{ 75.0f, 45.0f, 20.0f },
 	{ -10.0f, 45.0f, -90.0f },
 };
@@ -114,13 +114,8 @@ int main() {
 	std::vector<PointLight> pointLights;
 	std::vector<Light> lights;
 	for (size_t i = 0; i < lightPos.size() && lightColor.size(); ++i) {
-		pointLights.push_back({ lightPos[i], lightColor[i], constant, linear, quadratic });
-		lights.emplace_back(lightPos[i], lightColor[i]);
-	}
-
-	// Initialize the lights
-	for (size_t i = 0; i < lights.size(); ++i) {
-		lights[i].Initialize();
+		pointLights.push_back({ lightPos[i], lightColor[i], constant, linear, quadratic});
+		lights.emplace_back(lightPos[i], ".\\models\\lamp\\JapaneseLamp.obj", lightColor[i]);
 	}
 
 	SkyBox skybox(".\\SkyBoxShader.vert", ".\\SkyBoxShader.frag");

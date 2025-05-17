@@ -11,6 +11,8 @@ public:
 	unsigned int LoadTexture(const char* path);
 
 private:
+	std::string m_directory;
+
 	unsigned int VAO, VBO, EBO;
 	unsigned int indexCount;
 	unsigned int textureID;
