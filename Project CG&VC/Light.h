@@ -25,5 +25,6 @@ public:
 
 private:
     unsigned int VAO, VBO;
+    glm::vec3 initialPosition;
     Shader lightShader;
 };

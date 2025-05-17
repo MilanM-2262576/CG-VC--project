@@ -148,7 +148,9 @@
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="Rollercoaster.cpp" />
     <ClCompile Include="Shader.cpp" />
+    <ClCompile Include="SkyBox.cpp" />
     <ClCompile Include="stb_image.cpp" />
+    <ClCompile Include="Utilities.cpp" />
     <ClCompile Include="Water.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -161,15 +163,17 @@
     <ClInclude Include="resource.h" />
     <ClInclude Include="Rollercoaster.h" />
     <ClInclude Include="Shader.h" />
+    <ClInclude Include="SkyBox.h" />
     <ClInclude Include="stb_image.h" />
+    <ClInclude Include="Utilities.h" />
     <ClInclude Include="Water.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\..\kenney_coaster-kit\Models\FBX format\coaster-train-front.fbx" />
     <None Include="BezierShader.frag" />
     <None Include="BezierShader.vert" />
-    <None Include="Cart.frag" />
-    <None Include="Cart.vert" />
+    <None Include="CartShader.frag" />
+    <None Include="CartShader.vert" />
     <None Include="LightSourceShader.frag" />
     <None Include="LightSourceShader.vert" />
     <None Include="GrassShader.frag" />
@@ -178,6 +182,8 @@
     <None Include="HeightmapShader.vert" />
     <None Include="LightingShader.frag" />
     <None Include="LightingShader.vert" />
+    <None Include="SkyBoxShader.frag" />
+    <None Include="SkyBoxShader.vert" />
     <None Include="WaterShader.frag" />
     <None Include="WaterShader.vert" />
   </ItemGroup>

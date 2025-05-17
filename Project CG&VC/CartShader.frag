@@ -1,6 +1,5 @@
-// This shader is used as a template for objects that need to be affected by lighting
 #version 330 core
-#define MAX_LIGHTS 4
+#define MAX_LIGHTS 6
 
 struct PointLight {
     vec3 position;
@@ -13,10 +12,12 @@ struct PointLight {
 uniform int numLights;
 uniform PointLight lights[MAX_LIGHTS];
 
+in vec2 TexCoords;
 in vec3 FragPos;
 in vec3 Normal;
-uniform vec3 objectColor;
+//uniform vec3 objectColor;
 uniform vec3 viewPos;
+uniform sampler2D colormap;
 
 out vec4 FragColor;
 
@@ -25,6 +26,8 @@ void main() {
     vec3 viewDir = normalize(viewPos - FragPos);
     vec3 result = vec3(0.0);
 
+    vec4 objectColor = texture(colormap, TexCoords);
+
     for (int i = 0; i < numLights; ++i) {
         // Attenuation
         float distance = length(lights[i].position - FragPos);
@@ -32,12 +35,12 @@ void main() {
 
         // Ambient
         float ambientStrength = 0.1;
-        vec3 ambient = ambientStrength * lights[i].color * objectColor;
+        vec3 ambient = ambientStrength * lights[i].color * objectColor.rgb;
 
         // Diffuse
         vec3 lightDir = normalize(lights[i].position - FragPos);
         float diff = max(dot(norm, lightDir), 0.0);
-        vec3 diffuse = diff * lights[i].color * objectColor;
+        vec3 diffuse = diff * lights[i].color * objectColor.rgb;
 
         // Specular
         float specularStrength = 0.5;

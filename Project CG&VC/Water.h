@@ -6,6 +6,7 @@
 #include "stb_image.h"
 
 #include "Shader.h"
+#include "Utilities.h"
 
 class Water {
 public:
@@ -16,6 +17,4 @@ private:
 	unsigned int VAO, VBO;
 	unsigned int waterTextureID;
 	float seaLevel;
-	
-	unsigned int loadTexture(const char* path);
 };
