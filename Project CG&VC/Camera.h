@@ -3,6 +3,7 @@
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <iostream>
 
 // Defines several possible options for camera movement. Used as abstraction to stay away from window-system specific input methods
 enum Camera_Movement {
@@ -37,6 +38,8 @@ public:
     float MouseSensitivity;
     float Zoom;
 
+    int cameraOption = 0;	// 0 = free camera, 1 = cart camera
+
     // constructor with vectors
     Camera(glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f), float yaw = YAW, float pitch = PITCH);
 
@@ -54,6 +57,12 @@ public:
 
     // processes input received from a mouse scroll-wheel event. Only requires input on the vertical wheel-axis
     void ProcessMouseScroll(float yoffset);
+
+    // Changes the camera option
+    void ChangeOption();
+
+    // Updates the camera for the cart camera
+    void UpdateCartCamera(glm::vec3 cartPos, glm::vec3 cartDir);
 
 private:
     // calculates the front vector from the Camera's (updated) Euler Angles

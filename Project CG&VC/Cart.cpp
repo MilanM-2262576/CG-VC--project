@@ -88,6 +88,16 @@ void Cart::Render(const glm::mat4& projection, const glm::mat4& view, std::vecto
     m_model.Draw(m_shader);
 }
 
+glm::vec3 Cart::GetPosition() const
+{
+    return m_position;
+}
+
+glm::vec3 Cart::GetDirection() const
+{
+    return m_direction;
+}
+
 // initialize buffers for the cart
 void Cart::InitializeBuffers() {
     const int sectorCount = 36; // longitude, more = smoother

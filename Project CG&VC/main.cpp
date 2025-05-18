@@ -22,7 +22,7 @@ const unsigned int SCR_WIDTH = 1920;
 const unsigned int SCR_HEIGHT = 1080;
 
 //Camera
-Camera camera(glm::vec3(0.0f, 100.0f, 3.0f)); // Pretty high for now so you can see the heightmap better
+Camera camera(glm::vec3(0.0f, 100.0f, 3.0f)); // Pretty high for now so you can see everything better
 float lastX = SCR_WIDTH / 2.0f;
 float lastY = SCR_HEIGHT / 2.0f;
 bool firstMouse = true;
@@ -60,6 +60,7 @@ void processInput(GLFWwindow* window);
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
+void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 GLFWwindow* InitializeGLFW();
 
 int main() {
@@ -102,7 +103,7 @@ int main() {
 	RollerCoaster rollerCoaster(bezierSegments, 0.5f, 16); // Create a rollercoaster
 
 	// Create a cart
-	Cart cart(&rollerCoaster, 0.1f); // Create a cart
+	Cart cart(&rollerCoaster, 0.2f); // Create a cart
 
 	// Create Heightmap
 	Heightmap heightmap(".\\heightmap.jpeg", ".\\textures", 64.0f / 256.0f, 16.0f);
@@ -158,6 +159,9 @@ int main() {
 		cart.Update(deltaTime);
 		cart.Render(projection, view, pointLights, camera.Position);
 
+		if (camera.cameraOption == 1)
+			camera.UpdateCartCamera(cart.GetPosition(), cart.GetDirection());
+
 		// Render the heightmap
 		glm::mat4 heightmapModel = glm::mat4(1.0f);
 		heightmap.Render(projection, view, heightmapModel);
@@ -197,6 +201,7 @@ GLFWwindow* InitializeGLFW() {
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 	glfwSetCursorPosCallback(window, mouse_callback);
 	glfwSetScrollCallback(window, scroll_callback);
+	glfwSetKeyCallback(window, key_callback);
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
@@ -214,14 +219,16 @@ void processInput(GLFWwindow* window) {
 		glfwSetWindowShouldClose(window, true);
 
 	// camera controls
-	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-		camera.ProcessKeyboard(FORWARD, deltaTime);
-	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-		camera.ProcessKeyboard(BACKWARD, deltaTime);
-	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-		camera.ProcessKeyboard(LEFT, deltaTime);
-	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-		camera.ProcessKeyboard(RIGHT, deltaTime);
+	if (camera.cameraOption == 0) {
+		if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+			camera.ProcessKeyboard(FORWARD, deltaTime);
+		if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+			camera.ProcessKeyboard(BACKWARD, deltaTime);
+		if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+			camera.ProcessKeyboard(LEFT, deltaTime);
+		if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+			camera.ProcessKeyboard(RIGHT, deltaTime);
+	}
 }
 
 // glfw: whenever the mouse moves, this callback is called
@@ -241,7 +248,8 @@ void mouse_callback(GLFWwindow* window, double xposIn, double yposIn) {
 	lastX = xpos;
 	lastY = ypos;
 
-	camera.ProcessMouseMovement(xoffset, yoffset);
+	if (camera.cameraOption != 1)
+		camera.ProcessMouseMovement(xoffset, yoffset);
 }
 
 // glfw: whenever the mouse scroll wheel scrolls, this callback is called
@@ -250,37 +258,13 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 	camera.ProcessMouseScroll(static_cast<float>(yoffset));
 }
 
+void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
+	std::cout << key << "pressed" << std::endl;
+	if (key == GLFW_KEY_Q && action == GLFW_PRESS)
+		camera.ChangeOption();
+};
+
 // glfw: whenever the window size changed, this callback function executes
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 	glViewport(0, 0, width, height);
-}
-
-unsigned int loadCubemap(std::vector<std::string> faces)
-{
-	unsigned int textureID;
-	glGenTextures(1, &textureID);
-	glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);
-
-	int width, height, nrChannels;
-	for (unsigned int i = 0; i < faces.size(); i++)
-	{
-		unsigned char* data = stbi_load(faces[i].c_str(), &width, &height, &nrChannels, 0);
-		if (data)
-		{
-			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-			stbi_image_free(data);
-		}
-		else
-		{
-			std::cout << "Cubemap texture failed to load at path: " << faces[i] << std::endl;
-			stbi_image_free(data);
-		}
-	}
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-
-	return textureID;
 }
