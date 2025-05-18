@@ -55,6 +55,11 @@ float constant = 1.0f;
 float linear = 0.005f;
 float quadratic = 0.00015f;
 
+//FBO variables
+unsigned int fbo = 0;
+unsigned int fboTexture = 0;
+unsigned int fboRBO = 0;
+
 //functions
 void processInput(GLFWwindow* window);
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
@@ -67,6 +72,8 @@ int main() {
 	//Initialize GLFW window
 	GLFWwindow* window = InitializeGLFW();
 	if (!window) { return -1; }
+
+	SetupFBO();
 
 	std::vector<std::vector<glm::vec3>> bezierSegments = {
 		// Start links-voor
@@ -134,6 +141,7 @@ int main() {
 
 		// Render
 		// --------------------------
+		glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -175,6 +183,8 @@ int main() {
 		//Poll for events
 		glfwPollEvents();
 		glfwSwapBuffers(window);
+
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 
 	// Clean up
@@ -267,4 +277,30 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 // glfw: whenever the window size changed, this callback function executes
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 	glViewport(0, 0, width, height);
+}
+
+void SetupFBO() {
+	// Create framebuffer
+	glGenFramebuffers(1, &fbo);
+	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+
+	// Create texture to hold color buffer
+	glGenTextures(1, &fboTexture);
+	glBindTexture(GL_TEXTURE_2D, fboTexture);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, fboTexture, 0);
+
+	// Create renderbuffer for depth and stencil
+	glGenRenderbuffers(1, &fboRBO);
+	glBindRenderbuffer(GL_RENDERBUFFER, fboRBO);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, SCR_WIDTH, SCR_HEIGHT);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, fboRBO);
+
+	// Check if framebuffer is complete
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+		std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << std::endl;
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
