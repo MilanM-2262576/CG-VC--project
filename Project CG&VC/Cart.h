@@ -14,6 +14,9 @@ public:
 	void Update(float deltaTime);
 	void Render(const glm::mat4& projection, const glm::mat4& view, std::vector<PointLight> lights, glm::vec3 cameraPos);
 
+	glm::vec3 GetPosition() const;
+	glm::vec3 GetDirection() const;
+
 private:
 	RollerCoaster* m_rollerCoaster;
 	Shader m_shader;
