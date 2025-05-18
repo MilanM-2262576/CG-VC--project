@@ -182,6 +182,8 @@
     <None Include="HeightmapShader.vert" />
     <None Include="LightingShader.frag" />
     <None Include="LightingShader.vert" />
+    <None Include="PostProcessShader.frag" />
+    <None Include="PostProcessShader.vert" />
     <None Include="SkyBoxShader.frag" />
     <None Include="SkyBoxShader.vert" />
     <None Include="WaterShader.frag" />

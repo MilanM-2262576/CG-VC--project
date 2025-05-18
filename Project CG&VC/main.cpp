@@ -68,6 +68,7 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 GLFWwindow* InitializeGLFW();
 void SetupFBO();
+void InitScreenQuad(unsigned int& quadVAO, unsigned int& quadVBO);
 
 int main() {
 	//Initialize GLFW window
@@ -129,6 +130,11 @@ int main() {
 
 	SkyBox skybox(".\\SkyBoxShader.vert", ".\\SkyBoxShader.frag");
 
+	unsigned int quadVAO = 0, quadVBO = 0;
+	InitScreenQuad(quadVAO, quadVBO);
+
+	Shader postProcessShader(".\\PostProcessShader.vert", ".\\PostProcessShader.frag");
+
 	while (!glfwWindowShouldClose(window)) {
 		// Time 
 		// -------------------------
@@ -181,11 +187,36 @@ int main() {
 		// Render the SkyBox
 		skybox.Render(projection, view);
 
+		// Unbind FBO to render to default framebuffer
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		// Use your post-processing shader
+		postProcessShader.use();
+		glBindVertexArray(quadVAO);
+		glDisable(GL_DEPTH_TEST); // Fullscreen quad doesn't need depth test
+
+		// Set uniforms
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, fboTexture);
+		postProcessShader.setInt("screenTexture", 0);
+
+		// Example: Gaussian blur kernel (3x3)
+		float kernel[9] = {
+			1.0/16, 2.0/16, 1.0/16,
+			2.0/16, 4.0/16, 2.0/16,
+			1.0/16, 2.0/16, 1.0/16
+		};
+
+		postProcessShader.setFloatArray("kernel", kernel, 9);
+		postProcessShader.setFloat("offset", 1.0f / 300.0f); // Adjust for your resolution
+
+		glDrawArrays(GL_TRIANGLES, 0, 6);
+		glEnable(GL_DEPTH_TEST);
+
 		//Poll for events
 		glfwPollEvents();
 		glfwSwapBuffers(window);
-
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 
 	// Clean up
@@ -304,4 +335,27 @@ void SetupFBO() {
 		std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << std::endl;
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+void InitScreenQuad(unsigned int& quadVAO, unsigned int& quadVBO) {
+	float quadVertices[] = {
+		// positions   // texCoords
+		-1.0f,  1.0f,  0.0f, 1.0f,
+		-1.0f, -1.0f,  0.0f, 0.0f,
+		 1.0f, -1.0f,  1.0f, 0.0f,
+
+		-1.0f,  1.0f,  0.0f, 1.0f,
+		 1.0f, -1.0f,  1.0f, 0.0f,
+		 1.0f,  1.0f,  1.0f, 1.0f
+	};
+
+	glGenVertexArrays(1, &quadVAO);
+	glGenBuffers(1, &quadVBO);
+	glBindVertexArray(quadVAO);
+	glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_STATIC_DRAW);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
 }
