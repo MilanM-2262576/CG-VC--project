@@ -86,3 +86,5 @@ glm::vec3 BezierCurve::GetPoint(float t) const {
     return point;
 }
 
+
+

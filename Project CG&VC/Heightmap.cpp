@@ -5,10 +5,10 @@ Heightmap::Heightmap(const std::string& heightmapPath, const std::string& textur
     GenerateBuffers();
 
     // Derive texture paths from texturePath base
-    std::string sandPath = texturePath + "/sand.jpg";
-    std::string grassPath = texturePath + "/grass.jpg";
-    std::string rockPath = texturePath + "/rock.jpg";
-    std::string snowPath = texturePath + "/snow.jpg";
+    std::string sandPath = texturePath + "/sand_cartoon.jpg";
+    std::string grassPath = texturePath + "/grass_cartoon.jpg";
+    std::string rockPath = texturePath + "/rock_cartoon.jpg";
+    std::string snowPath = texturePath + "/snow_cartoon.jpg";
 
     sandTextureID = Utilities::loadTexture(sandPath);
     grassTextureID = Utilities::loadTexture(grassPath);
@@ -141,4 +141,17 @@ void Heightmap::Render(const glm::mat4& projection, const glm::mat4& view, const
     for (unsigned int strip = 0; strip < numStrips; ++strip) {
         glDrawElements(GL_TRIANGLE_STRIP, numVertsPerStrip, GL_UNSIGNED_INT, (void*)(sizeof(unsigned int) * numVertsPerStrip * strip));
     }
+}
+
+
+float Heightmap::GetHeightAt(float x, float z) const {
+    int width = static_cast<int>(sqrt(vertices.size() / 8)); 
+    int height = width;
+    float fx = x + width / 2.0f;
+    float fz = z + height / 2.0f;
+    int ix = static_cast<int>(fx);
+    int iz = static_cast<int>(fz);
+    if (ix < 0 || ix >= width || iz < 0 || iz >= height) return 0.0f;
+    size_t idx = (iz * width + ix) * 8 + 1; 
+    return vertices[idx];
 }

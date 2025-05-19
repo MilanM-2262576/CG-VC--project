@@ -66,7 +66,7 @@ void Light::Render(const glm::mat4& projection, const glm::mat4& view) {
 
     glm::mat4 model = glm::mat4(1.0f);
     model = glm::translate(model, position);
-    model = glm::scale(model, glm::vec3(0.5f));
+    model = glm::scale(model, glm::vec3(0.8f));
     lightShader.setMat4("model", model);
 
     m_model.Draw(lightShader);

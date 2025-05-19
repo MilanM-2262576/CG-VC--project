@@ -48,12 +48,12 @@ static float skyboxVertices[] = {
 };
 
 std::vector<std::string> faces = {
-        "skybox/right.jpg",
-        "skybox/left.jpg",
-        "skybox/top.jpg",
-        "skybox/bottom.jpg",
-        "skybox/front.jpg",
-        "skybox/back.jpg"
+        "models/skybox/right.jpg",
+        "models/skybox/left.jpg",
+        "models/skybox/top.jpg",
+        "models/skybox/bottom.jpg",
+        "models/skybox/front.jpg",
+        "models/skybox/back.jpg"
 };
 
 SkyBox::SkyBox(const char* vertPath, const char* fragPath)
