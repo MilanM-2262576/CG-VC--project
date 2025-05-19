@@ -2,7 +2,8 @@
 
 // Constructor
 Cart::Cart(RollerCoaster* coaster, float speed)
-	: m_rollerCoaster(coaster), m_model(".\\models\\cart\\coaster-train-front.fbx"), m_shader(".\\CartShader.vert", ".\\CartShader.frag"), m_speed(speed), m_t(0.0f), m_currentCurveIndex(0) {
+	: m_rollerCoaster(coaster), m_model(".\\models\\cart\\coaster-train-front.fbx"), m_wagonModel(".\\models\\cart\\coaster-train.fbx"),
+    m_shader(".\\CartShader.vert", ".\\CartShader.frag"), m_speed(speed), m_t(0.0f), m_currentCurveIndex(0) {
 
 	InitializeBuffers();
 	updatePositionAndDirection();
@@ -86,6 +87,8 @@ void Cart::Render(const glm::mat4& projection, const glm::mat4& view, std::vecto
     m_shader.setMat4("model", model);
 
     m_model.Draw(m_shader);
+
+
 }
 
 // initialize buffers for the cart

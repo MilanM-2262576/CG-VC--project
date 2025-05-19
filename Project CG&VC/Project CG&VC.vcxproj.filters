@@ -69,6 +69,27 @@
     <ClCompile Include="SkyBox.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="BezierTrack.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Scenery.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tree.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Boat.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Ship.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Shipwreck.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Tower.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BezierCurve.h">
@@ -108,6 +129,27 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="SkyBox.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="BezierTrack.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Scenery.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tree.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Boat.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Ship.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Shipwreck.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tower.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -163,6 +205,14 @@
     <None Include="SkyBoxShader.frag">
       <Filter>Source Files\Shaders</Filter>
     </None>
+    <None Include="models\rollercoaster\coaster-mouse-straight.fbx">
+      <Filter>Resource Files\models</Filter>
+    </None>
+    <None Include="models\cart\coaster-train.fbx">
+      <Filter>Resource Files\models</Filter>
+    </None>
+    <None Include="SceneryShader.vert" />
+    <None Include="SceneryShader.frag" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="heightmap.png">
@@ -185,6 +235,27 @@
     </Image>
     <Image Include="..\..\..\..\kenney_coaster-kit\Models\Textures\colormap.png">
       <Filter>Resource Files\models</Filter>
+    </Image>
+    <Image Include="models\lamp\Textures\untitled_Material.001_BaseColor.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="skybox\back.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="skybox\bottom.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="skybox\front.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="skybox\left.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="skybox\right.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="skybox\top.jpg">
+      <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>
 </Project>

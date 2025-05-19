@@ -139,6 +139,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="BezierCurve.cpp" />
+    <ClCompile Include="BezierTrack.cpp" />
+    <ClCompile Include="Boat.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Cart.cpp" />
     <ClCompile Include="glad.c" />
@@ -147,14 +149,21 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="Rollercoaster.cpp" />
+    <ClCompile Include="Scenery.cpp" />
     <ClCompile Include="Shader.cpp" />
+    <ClCompile Include="Ship.cpp" />
+    <ClCompile Include="Shipwreck.cpp" />
     <ClCompile Include="SkyBox.cpp" />
     <ClCompile Include="stb_image.cpp" />
+    <ClCompile Include="Tower.cpp" />
+    <ClCompile Include="Tree.cpp" />
     <ClCompile Include="Utilities.cpp" />
     <ClCompile Include="Water.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BezierCurve.h" />
+    <ClInclude Include="BezierTrack.h" />
+    <ClInclude Include="Boat.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Cart.h" />
     <ClInclude Include="Heightmap.h" />
@@ -162,9 +171,14 @@
     <ClInclude Include="Model.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Rollercoaster.h" />
+    <ClInclude Include="Scenery.h" />
     <ClInclude Include="Shader.h" />
+    <ClInclude Include="Ship.h" />
+    <ClInclude Include="Shipwreck.h" />
     <ClInclude Include="SkyBox.h" />
     <ClInclude Include="stb_image.h" />
+    <ClInclude Include="Tower.h" />
+    <ClInclude Include="Tree.h" />
     <ClInclude Include="Utilities.h" />
     <ClInclude Include="Water.h" />
   </ItemGroup>
@@ -182,6 +196,10 @@
     <None Include="HeightmapShader.vert" />
     <None Include="LightingShader.frag" />
     <None Include="LightingShader.vert" />
+    <None Include="models\cart\coaster-train.fbx" />
+    <None Include="models\rollercoaster\coaster-mouse-straight.fbx" />
+    <None Include="SceneryShader.frag" />
+    <None Include="SceneryShader.vert" />
     <None Include="SkyBoxShader.frag" />
     <None Include="SkyBoxShader.vert" />
     <None Include="WaterShader.frag" />

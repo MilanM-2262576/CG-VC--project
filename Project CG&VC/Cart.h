@@ -18,10 +18,14 @@ private:
 	RollerCoaster* m_rollerCoaster;
 	Shader m_shader;
 	Model m_model;
+	Model m_wagonModel;
 
+	float m_velocity = 0.0f;
 	float m_speed;
 	float m_t;
 	int m_currentCurveIndex;
+
+	float m_mass = 100.0f;
 
 	glm::vec3 m_position;
 	glm::vec3 m_direction;
