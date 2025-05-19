@@ -76,6 +76,11 @@ void Camera::ProcessMouseScroll(float yoffset)
         Zoom = 45.0f;
 }
 
+void Camera::ChangeOption() {
+    cameraOption = (cameraOption + 1) % 2;
+    std::cout << cameraOption << std::endl;
+}
+
 // calculates the front vector from the Camera's (updated) Euler Angles
 void Camera::updateCameraVectors()
 {
@@ -89,4 +94,13 @@ void Camera::updateCameraVectors()
     // Recalculate the Right and Up vector
     Right = glm::normalize(glm::cross(Front, WorldUp));  // normalize the vectors, because their length gets closer to 0 the more you look up or down which results in slower movement.
     Up = glm::normalize(glm::cross(Right, Front));
+}
+
+void Camera::UpdateCartCamera(glm::vec3 cartPos, glm::vec3 cartDir) {
+    glm::vec3 cameraOffset = -cartDir * 3.0f + glm::vec3(0.0f, 4.0f, 0.0f);
+    Position = cartPos + cameraOffset;
+    Front = glm::normalize(cartDir);
+    Yaw = glm::degrees(atan2(cartDir.z, cartDir.x));
+    Pitch = glm::degrees(asin(cartDir.y));
+    updateCameraVectors();
 }

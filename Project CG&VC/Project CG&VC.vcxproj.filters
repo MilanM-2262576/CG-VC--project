@@ -25,6 +25,12 @@
     <Filter Include="Resource Files\models">
       <UniqueIdentifier>{895b1a48-bb69-4d05-b5f1-286c78be39ee}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files\world\skybox">
+      <UniqueIdentifier>{37fda590-7bb5-4cec-9f57-f5f6619649e8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\models\cart">
+      <UniqueIdentifier>{8b9bd426-aaa0-4b9a-98f6-ddf830a7d5bd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="glad.c">
@@ -196,9 +202,6 @@
     <None Include="WaterShader.frag">
       <Filter>Source Files\Shaders</Filter>
     </None>
-    <None Include="..\..\..\..\kenney_coaster-kit\Models\FBX format\coaster-train-front.fbx">
-      <Filter>Resource Files\models</Filter>
-    </None>
     <None Include="SkyBoxShader.vert">
       <Filter>Source Files\Shaders</Filter>
     </None>
@@ -211,8 +214,12 @@
     <None Include="models\cart\coaster-train.fbx">
       <Filter>Resource Files\models</Filter>
     </None>
-    <None Include="SceneryShader.vert" />
-    <None Include="SceneryShader.frag" />
+    <None Include="SceneryShader.vert">
+       <Filter>Source Files\Shaders</Filter>
+    </None>
+    <None Include="SceneryShader.frag">
+      <Filter>Source Files\Shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="heightmap.png">
@@ -233,8 +240,26 @@
     <Image Include="textures\water.jpg">
       <Filter>Resource Files\textures</Filter>
     </Image>
+    <Image Include="skybox\back.jpg">
+      <Filter>Resource Files\world\skybox</Filter>
+    </Image>
+    <Image Include="skybox\bottom.jpg">
+      <Filter>Resource Files\world\skybox</Filter>
+    </Image>
+    <Image Include="skybox\front.jpg">
+      <Filter>Resource Files\world\skybox</Filter>
+    </Image>
+    <Image Include="skybox\left.jpg">
+      <Filter>Resource Files\world\skybox</Filter>
+    </Image>
+    <Image Include="skybox\right.jpg">
+      <Filter>Resource Files\world\skybox</Filter>
+    </Image>
+    <Image Include="skybox\top.jpg">
+      <Filter>Resource Files\world\skybox</Filter>
+    </Image>
     <Image Include="..\..\..\..\kenney_coaster-kit\Models\Textures\colormap.png">
-      <Filter>Resource Files\models</Filter>
+      <Filter>Resource Files\models\cart</Filter>
     </Image>
     <Image Include="models\lamp\Textures\untitled_Material.001_BaseColor.png">
       <Filter>Resource Files</Filter>
