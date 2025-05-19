@@ -146,6 +146,8 @@
     <ClCompile Include="Light.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Model.cpp" />
+    <ClCompile Include="PostProcessKernel.cpp" />
+    <ClCompile Include="PostProcessor.cpp" />
     <ClCompile Include="Rollercoaster.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="SkyBox.cpp" />
@@ -160,6 +162,8 @@
     <ClInclude Include="Heightmap.h" />
     <ClInclude Include="Light.h" />
     <ClInclude Include="Model.h" />
+    <ClInclude Include="PostProcessKernel.h" />
+    <ClInclude Include="PostProcessor.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Rollercoaster.h" />
     <ClInclude Include="Shader.h" />

@@ -17,6 +17,9 @@
 #include "Utilities.h"
 #include "SkyBox.h"
 
+#include "PostProcessor.h"
+#include "PostProcessKernel.h"
+
 // Screen size
 const unsigned int SCR_WIDTH = 1920;
 const unsigned int SCR_HEIGHT = 1080;
@@ -130,10 +133,8 @@ int main() {
 
 	SkyBox skybox(".\\SkyBoxShader.vert", ".\\SkyBoxShader.frag");
 
-	unsigned int quadVAO = 0, quadVBO = 0;
-	InitScreenQuad(quadVAO, quadVBO);
-
-	Shader postProcessShader(".\\PostProcessShader.vert", ".\\PostProcessShader.frag");
+	PostProcessor postProcessor(SCR_WIDTH, SCR_HEIGHT, ".\\PostProcessShader.vert", ".\\PostProcessShader.frag");
+	PostProcessKernel laplacianKernel(PostProcessKernel::Type::Laplacian);
 
 	while (!glfwWindowShouldClose(window)) {
 		// Time 
@@ -148,7 +149,8 @@ int main() {
 
 		// Render
 		// --------------------------
-		glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+		postProcessor.BeginRender();
+
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -187,32 +189,7 @@ int main() {
 		// Render the SkyBox
 		skybox.Render(projection, view);
 
-		// Unbind FBO to render to default framebuffer
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-		// Use your post-processing shader
-		postProcessShader.use();
-		glBindVertexArray(quadVAO);
-		glDisable(GL_DEPTH_TEST); // Fullscreen quad doesn't need depth test
-
-		// Set uniforms
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, fboTexture);
-		postProcessShader.setInt("screenTexture", 0);
-
-		// Example: Gaussian blur kernel (3x3)
-		float kernel[9] = {
-			1.0/16, 2.0/16, 1.0/16,
-			2.0/16, 4.0/16, 2.0/16,
-			1.0/16, 2.0/16, 1.0/16
-		};
-
-		postProcessShader.setFloatArray("kernel", kernel, 9);
-		postProcessShader.setFloat("offset", 1.0f / 300.0f); // Adjust for your resolution
-
-		glDrawArrays(GL_TRIANGLES, 0, 6);
-		glEnable(GL_DEPTH_TEST);
+		postProcessor.EndRender(laplacianKernel, 1.0f / 300.0f);
 
 		//Poll for events
 		glfwPollEvents();
@@ -309,53 +286,4 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 // glfw: whenever the window size changed, this callback function executes
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 	glViewport(0, 0, width, height);
-}
-
-void SetupFBO() {
-	// Create framebuffer
-	glGenFramebuffers(1, &fbo);
-	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-
-	// Create texture to hold color buffer
-	glGenTextures(1, &fboTexture);
-	glBindTexture(GL_TEXTURE_2D, fboTexture);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, fboTexture, 0);
-
-	// Create renderbuffer for depth and stencil
-	glGenRenderbuffers(1, &fboRBO);
-	glBindRenderbuffer(GL_RENDERBUFFER, fboRBO);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, SCR_WIDTH, SCR_HEIGHT);
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, fboRBO);
-
-	// Check if framebuffer is complete
-	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-		std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << std::endl;
-
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-}
-
-void InitScreenQuad(unsigned int& quadVAO, unsigned int& quadVBO) {
-	float quadVertices[] = {
-		// positions   // texCoords
-		-1.0f,  1.0f,  0.0f, 1.0f,
-		-1.0f, -1.0f,  0.0f, 0.0f,
-		 1.0f, -1.0f,  1.0f, 0.0f,
-
-		-1.0f,  1.0f,  0.0f, 1.0f,
-		 1.0f, -1.0f,  1.0f, 0.0f,
-		 1.0f,  1.0f,  1.0f, 1.0f
-	};
-
-	glGenVertexArrays(1, &quadVAO);
-	glGenBuffers(1, &quadVBO);
-	glBindVertexArray(quadVAO);
-	glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_STATIC_DRAW);
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
 }
