@@ -100,7 +100,7 @@ void Camera::UpdateCartCamera(glm::vec3 cartPos, glm::vec3 cartDir) {
     glm::vec3 cameraOffset = -cartDir * 3.0f + glm::vec3(0.0f, 4.0f, 0.0f);
     Position = cartPos + cameraOffset;
     Front = glm::normalize(cartDir);
-    Yaw = glm::degrees(atan2(cartDir.z, cartDir.x));
-    Pitch = glm::degrees(asin(cartDir.y));
+    //Yaw = glm::degrees(atan2(cartDir.z, cartDir.x));
+    //Pitch = glm::degrees(asin(cartDir.y));
     updateCameraVectors();
 }

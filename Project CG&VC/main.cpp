@@ -394,8 +394,7 @@ void mouse_callback(GLFWwindow* window, double xposIn, double yposIn) {
 	lastX = xpos;
 	lastY = ypos;
 
-	if (camera.cameraOption != 1)
-		camera.ProcessMouseMovement(xoffset, yoffset);
+	camera.ProcessMouseMovement(xoffset, yoffset);
 }
 
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods) {
