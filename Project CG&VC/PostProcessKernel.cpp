@@ -18,6 +18,7 @@ PostProcessKernel::PostProcessKernel(Type type) : m_type(type) {
         };
         break;
 
+    case Type::Default:
     default:
         m_kernel = {
             0, 0, 0,

@@ -6,6 +6,7 @@
 class PostProcessKernel {
 public:
 	enum class Type {
+		Default,
 		Gaussian,
 		Laplacian
 	};

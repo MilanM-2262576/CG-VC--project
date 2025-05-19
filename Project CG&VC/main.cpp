@@ -80,15 +80,14 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 GLFWwindow* InitializeGLFW();
-void SetupFBO();
-void InitScreenQuad(unsigned int& quadVAO, unsigned int& quadVBO);
 
 int main() {
 	//Initialize GLFW window
 	GLFWwindow* window = InitializeGLFW();
 	if (!window) { return -1; }
 
-	SetupFBO();
+	PostProcessor postProcessor(SCR_WIDTH, SCR_HEIGHT, ".\\PostProcessShader.vert", ".\\PostProcessShader.frag");
+	PostProcessKernel laplacianKernel(PostProcessKernel::Type::Default);
 
 	std::vector<std::vector<glm::vec3>> bezierSegments = {
 		// Segment 1: Start met steile klim
@@ -154,7 +153,6 @@ int main() {
 	// Create Heightmap
 	Heightmap heightmap(".\\heightmap.jpeg", ".\\textures", 64.0f / 256.0f, 16.0f);
 
-
 	// Create Trees
 	std::vector<Tree> trees;
 
@@ -177,7 +175,6 @@ int main() {
 		float y = heightmap.GetHeightAt(x, z);
 		trees.emplace_back(glm::vec3(x, y, z), 0.1f); 
 	}
-
 
 	// Create boats 
 	std::vector<Boat> boats;
@@ -237,10 +234,8 @@ int main() {
 		towers.emplace_back(glm::vec3(x, y, z), 0.04f); // Adjust scale as needed
 	}
 
-
 	// Create water plane
 	Water water(0.0f, ".\\heightmap.jpeg");
-
 
 	// Create lights
 	std::vector<PointLight> pointLights;
@@ -251,9 +246,6 @@ int main() {
 	}
 
 	SkyBox skybox(".\\SkyBoxShader.vert", ".\\SkyBoxShader.frag");
-
-	PostProcessor postProcessor(SCR_WIDTH, SCR_HEIGHT, ".\\PostProcessShader.vert", ".\\PostProcessShader.frag");
-	PostProcessKernel laplacianKernel(PostProcessKernel::Type::Laplacian);
 
 	while (!glfwWindowShouldClose(window)) {
 		// Time 
