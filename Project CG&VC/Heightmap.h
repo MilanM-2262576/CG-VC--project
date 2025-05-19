@@ -20,6 +20,9 @@ public:
 
 	void Render(const glm::mat4& projection, const glm::mat4& view, const glm::mat4& model);
 
+	float GetHeightAt(float x, float z) const;
+	std::vector<float> getVertices() { return vertices; }
+
 private:
 	void LoadHeightmap(const std::string& heightmapPath, float yScale, float yShift);
 	void GenerateBuffers();

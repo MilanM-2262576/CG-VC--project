@@ -12,10 +12,18 @@
 #include "BezierCurve.h"
 #include "Rollercoaster.h"
 #include "Cart.h"
+#include "BezierTrack.h"
+#include "Tree.h"
+#include "Boat.h"
+#include "Ship.h"
+#include "Shipwreck.h"
+#include "Tower.h"
 
 #include "Light.h"
 #include "Utilities.h"
 #include "SkyBox.h"
+
+#include <random>
 
 // Screen size
 const unsigned int SCR_WIDTH = 1920;
@@ -59,6 +67,7 @@ float quadratic = 0.00015f;
 void processInput(GLFWwindow* window);
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
+void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 GLFWwindow* InitializeGLFW();
@@ -69,47 +78,156 @@ int main() {
 	if (!window) { return -1; }
 
 	std::vector<std::vector<glm::vec3>> bezierSegments = {
-		// Start links-voor
+		// Segment 1: Start met steile klim
 		{
-			{-120.0f, 30.0f, -120.0f},
-			{-80.0f, 35.0f, -80.0f},
-			{-40.0f, 50.0f, -40.0f},   // Begin klim
-			{0.0f, 70.0f, 0.0f}        // Top van de berg
+			{-120.0f, 30.0f, -120.0f},                // Beginpunt
+			{-90.0f, 35.0f, -90.0f},                  // Langzame start
+			{-60.0f, 50.0f, -60.0f},                  // Steile klim
+			{0.0f, 80.0f, 0.0f}                       // Hoge top (verhoogd)
 		},
-		// Midden naar rechts-achter (afdaling)
+		// Segment 2: Steile afdaling
 		{
-			{0.0f, 70.0f, 0.0f},       // Top van de berg
-			{40.0f, 50.0f, 40.0f},     // Daling
-			{80.0f, 35.0f, 80.0f},
-			{120.0f, 30.0f, 120.0f}
+			{0.0f, 80.0f, 0.0f},                      // Hoge top
+			{20.0f, 60.0f, 20.0f},                    // Begin steile afdaling
+			{40.0f, 35.0f, 40.0f},                    // Voortzetting afdaling
+			{60.0f, 25.0f, 60.0f}                     // Lager eindpunt voor meer versnelling
 		},
-		// Bocht naar links-achter
+		// Segment 3: Looping omhoog
 		{
-			{120.0f, 30.0f, 120.0f},
-			{100.0f, 40.0f, 60.0f},
-			{60.0f, 35.0f, 100.0f},
-			{120.0f, 30.0f, -120.0f}
+			{60.0f, 25.0f, 60.0f},                    // Beginpunt laag
+			{80.0f, 15.0f, 90.0f},                    // Controle voor bocht en daling
+			{100.0f, 10.0f, 110.0f},                  // Laagste punt
+			{120.0f, 40.0f, 120.0f}                   // Omhoog na dip
 		},
-		// Bocht naar rechts-voor en terug naar start
+		// Segment 4: Snelle bocht met banking naar rechts
 		{
-			{120.0f, 30.0f, -120.0f},
-			{60.0f, 40.0f, -100.0f},
-			{-60.0f, 35.0f, -100.0f},
-			{-120.0f, 30.0f, -120.0f}
+			{120.0f, 40.0f, 120.0f},                  // Start hoog
+			{130.0f, 45.0f, 60.0f},                   // Banking naar rechts (hoger)
+			{130.0f, 40.0f, 0.0f},                    // Banking houden
+			{120.0f, 35.0f, -60.0f}                   // Uitkomen van bocht
+		},
+		// Segment 5: Kurketrekker (eerste deel)
+		{
+			{120.0f, 35.0f, -60.0f},                  // Start kurketrekker
+			{100.0f, 50.0f, -90.0f},                  // Omhoog en draai
+			{60.0f, 55.0f, -100.0f},                  // Hoogste punt kurketrekker
+			{20.0f, 45.0f, -80.0f}                    // Begin afdaling
+		},
+		// Segment 6: Kurketrekker (tweede deel)
+		{
+			{20.0f, 45.0f, -80.0f},                   // Vervolg kurketrekker
+			{0.0f, 35.0f, -70.0f},                    // Naar beneden draaien
+			{-30.0f, 25.0f, -90.0f},                  // Laagste punt
+			{-60.0f, 20.0f, -120.0f}                  // Eindpunt kurketrekker
+		},
+		// Segment 7: Laatste heuvels en naar start
+		{
+			{-60.0f, 20.0f, -120.0f},                 // Beginpunt laatste segment
+			{-75.0f, 35.0f, -110.0f},                 // Kleine heuvel omhoog
+			{-90.0f, 25.0f, -130.0f},                 // Kleine dip
+			{-120.0f, 30.0f, -120.0f}                 // Terug bij start
 		}
 	};
 
+	BezierTrack track(bezierSegments);
+
 	// Create the rollercoaster
-	RollerCoaster rollerCoaster(bezierSegments, 0.5f, 16); // Create a rollercoaster
+	RollerCoaster rollerCoaster(track.GetSegments(), 32);
 
 	// Create a cart
-	Cart cart(&rollerCoaster, 0.2f); // Create a cart
+	Cart cart(&rollerCoaster, 0.3f); 
+
 
 	// Create Heightmap
 	Heightmap heightmap(".\\heightmap.jpeg", ".\\textures", 64.0f / 256.0f, 16.0f);
 
+
+	// Create Trees
+	std::vector<Tree> trees;
+
+	// Tree positions 
+	std::vector<glm::vec2> treePositions = {
+		{-132, 18}, {-166, -2}, {-183, -16}, {-165, -24}, {-157, -67}, {-152, -101},
+		{-132, -122}, {-115, -172}, {-124, -199}, {-111, -187}, {-82, -155}, {-43, -114}, {-18, -113},
+		{11, -110}, {63, -109}, {88, -113}, {107, -102},
+		{128, -131}, {144, -121},  {172, -107}, {174, -92}, {172, -74}, {154, -69}, {157, -54}, {139, -31},
+		{150, 36}, {142, 47}, {158, 61}, {123, 80}, {102, 81},
+		{100, 36}, {107, 9}, {121, 13},
+		{109, 60}, {80, 91}, {75, 111}, {49, 122}, {30, 117},
+		{-10, 134}, {-23, 145},
+		{-90, 78}, {-101, 88}, {-113, 122}, {-106, 146},  {-164, 100}
+	};
+
+	for (const auto& pos2d : treePositions){
+		float x = pos2d.x;
+		float z = pos2d.y;
+		float y = heightmap.GetHeightAt(x, z);
+		trees.emplace_back(glm::vec3(x, y, z), 0.1f); 
+	}
+
+
+	// Create boats 
+	std::vector<Boat> boats;
+	std::vector<glm::vec2> boatPositions = {
+		{-56, 249},
+		{-216, 203},
+		{-263, -121},
+		{-18, -260}
+	};
+
+	for (const auto& pos2d : boatPositions) {
+		float x = pos2d.x;
+		float z = pos2d.y;
+		float y = -1.0;
+		boats.emplace_back(glm::vec3(x, y, z), 0.05f); 
+	}
+
+	// Create ships
+	std::vector<Ship> ships;
+	std::vector<glm::vec2> shipPositions = {
+		{195, 240},
+		{269, -25}
+	};
+
+	for (size_t i = 0; i < shipPositions.size(); ++i) {
+		float x = shipPositions[i].x;
+		float z = shipPositions[i].y;
+		float y = -6.0f;
+		ships.emplace_back(glm::vec3(x, y, z), 0.05f);
+		if (i == 0) {
+			ships.back().SetRotation(glm::vec3(0.0f, glm::radians(-90.0f), 0.0f));
+		}
+	}
+	// Create shipwrecks
+	std::vector<Shipwreck> shipwrecks;
+	std::vector<glm::vec2> shipwreckPositions = {
+		{147, -253} // Rounded from (146.544, -253.331)
+	};
+
+	for (const auto& pos2d : shipwreckPositions) {
+		float x = pos2d.x;
+		float z = pos2d.y;
+		float y = -8.0f; // Place it at/below water, adjust as needed
+		shipwrecks.emplace_back(glm::vec3(x, y, z), 0.05f);
+	}
+
+	// Create towers
+	std::vector<Tower> towers;
+	std::vector<glm::vec2> towerPositions = {
+		{-90, -102} 
+	};
+
+	for (const auto& pos2d : towerPositions) {
+		float x = pos2d.x;
+		float z = pos2d.y;
+		float y = heightmap.GetHeightAt(x, z);
+		towers.emplace_back(glm::vec3(x, y, z), 0.04f); // Adjust scale as needed
+	}
+
+
 	// Create water plane
 	Water water(0.0f, ".\\heightmap.jpeg");
+
 
 	// Create lights
 	std::vector<PointLight> pointLights;
@@ -159,8 +277,35 @@ int main() {
 		cart.Update(deltaTime);
 		cart.Render(projection, view, pointLights, camera.Position);
 
+
+		//Render Trees
+		for (auto& tree : trees) {
+			tree.Render(projection, view);
+		}
+
+		// Render Boats
+		for (auto& boat : boats) {
+			boat.Render(projection, view);
+		}
+
+		// Render Ships
+		for (auto& ship : ships) {
+			ship.Render(projection, view);
+		}
+
+		// Render Shipwrecks
+		for (auto& shipwreck : shipwrecks) {
+			shipwreck.Render(projection, view);
+		}
+
+		// Render Towers
+		for (auto& tower : towers) {
+			tower.Render(projection, view);
+		}
+
 		if (camera.cameraOption == 1)
 			camera.UpdateCartCamera(cart.GetPosition(), cart.GetDirection());
+
 
 		// Render the heightmap
 		glm::mat4 heightmapModel = glm::mat4(1.0f);
@@ -177,12 +322,12 @@ int main() {
 		glfwSwapBuffers(window);
 	}
 
-	// Clean up
-	rollerCoaster.CleanUp();
 
 	glfwTerminate();
 	return 0;
 }
+
+
 
 //Initialization of GLFW
 GLFWwindow* InitializeGLFW() {
@@ -200,6 +345,7 @@ GLFWwindow* InitializeGLFW() {
 	glfwMakeContextCurrent(window);
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 	glfwSetCursorPosCallback(window, mouse_callback);
+	glfwSetMouseButtonCallback(window, mouse_button_callback);
 	glfwSetScrollCallback(window, scroll_callback);
 	glfwSetKeyCallback(window, key_callback);
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
@@ -250,6 +396,16 @@ void mouse_callback(GLFWwindow* window, double xposIn, double yposIn) {
 
 	if (camera.cameraOption != 1)
 		camera.ProcessMouseMovement(xoffset, yoffset);
+}
+
+void mouse_button_callback(GLFWwindow* window, int button, int action, int mods) {
+	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
+		// Print the camera's world position
+		std::cout << "Camera position: ("
+			<< camera.Position.x << ", "
+			<< camera.Position.y << ", "
+			<< camera.Position.z << ")" << std::endl;
+	}
 }
 
 // glfw: whenever the mouse scroll wheel scrolls, this callback is called
