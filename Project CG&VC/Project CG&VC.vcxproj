@@ -148,6 +148,8 @@
     <ClCompile Include="Light.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Model.cpp" />
+    <ClCompile Include="PostProcessKernel.cpp" />
+    <ClCompile Include="PostProcessor.cpp" />
     <ClCompile Include="Rollercoaster.cpp" />
     <ClCompile Include="Scenery.cpp" />
     <ClCompile Include="Shader.cpp" />
@@ -169,6 +171,8 @@
     <ClInclude Include="Heightmap.h" />
     <ClInclude Include="Light.h" />
     <ClInclude Include="Model.h" />
+    <ClInclude Include="PostProcessKernel.h" />
+    <ClInclude Include="PostProcessor.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Rollercoaster.h" />
     <ClInclude Include="Scenery.h" />
@@ -196,6 +200,8 @@
     <None Include="HeightmapShader.vert" />
     <None Include="LightingShader.frag" />
     <None Include="LightingShader.vert" />
+    <None Include="PostProcessShader.frag" />
+    <None Include="PostProcessShader.vert" />
     <None Include="models\cart\coaster-train.fbx" />
     <None Include="models\rollercoaster\coaster-mouse-straight.fbx" />
     <None Include="SceneryShader.frag" />
