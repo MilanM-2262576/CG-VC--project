@@ -15,10 +15,10 @@ public:
 
 	const float* Data() const;
 	int Size() const;
+	std::string Name() const;
 
 private:
 	std::vector<float> m_kernel;
 	Type m_type;
 
-	std::string Name() const;
 };

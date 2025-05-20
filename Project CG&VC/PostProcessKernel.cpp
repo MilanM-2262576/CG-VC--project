@@ -41,6 +41,7 @@ std::string PostProcessKernel::Name() const {
     switch (m_type) {
     case Type::Gaussian: return "Gaussian";
     case Type::Laplacian: return "Laplacian";
+    case Type::Default: return "Default";
     default: return "Unknown";
     }
 }
