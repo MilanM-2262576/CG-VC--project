@@ -12,8 +12,8 @@ d 1.000000
 illum 2
 
 map_Kd Textures/untitled_Material.001_BaseColor.png
-map_Kd Textures/untitled_Material.001_Emissive.png
-map_Kd Textures/untitled_Material.001_Height.png
-map_Kd Textures/untitled_Material.001_Metallic.png
-map_Kd Textures/untitled_Material.001_Normal.png
-map_Kd Textures/untitled_Material.001_Roughness.png
+map_Ke Textures/untitled_Material.001_Emissive.png
+map_bump Textures/untitled_Material.001_Normal.png
+map_Pm Textures/untitled_Material.001_Metallic.png
+map_Pr Textures/untitled_Material.001_Roughness.png
+map_disp Textures/untitled_Material.001_Height.png

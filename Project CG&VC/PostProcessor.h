@@ -8,10 +8,11 @@ public:
     PostProcessor(unsigned int width, unsigned int height, const char* vertPath, const char* fragPath);
     ~PostProcessor();
 
-    void StartRender();
+    void StartRender() const;
     void EndRender(const PostProcessKernel& kernel, float offset = 1.0f / 300.0f);
 
     unsigned int GetTexture() const;
+    unsigned int GetColorTexture() const;
 
 private:
     void InitFBO();

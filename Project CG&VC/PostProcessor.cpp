@@ -62,7 +62,7 @@ void PostProcessor::InitScreenQuad() {
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
 }
 
-void PostProcessor::StartRender() {
+void PostProcessor::StartRender() const {
     glBindFramebuffer(GL_FRAMEBUFFER, m_fbo);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
@@ -87,5 +87,9 @@ void PostProcessor::EndRender(const PostProcessKernel& kernel, float offset) {
 
 unsigned int PostProcessor::GetTexture() const
 {
+    return m_fboTexture;
+}
+
+unsigned int PostProcessor::GetColorTexture() const {
     return m_fboTexture;
 }

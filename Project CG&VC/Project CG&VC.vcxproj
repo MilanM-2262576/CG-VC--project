@@ -190,8 +190,12 @@
     <None Include="..\..\..\..\kenney_coaster-kit\Models\FBX format\coaster-train-front.fbx" />
     <None Include="BezierShader.frag" />
     <None Include="BezierShader.vert" />
+    <None Include="BlurShader.frag" />
+    <None Include="BlurShader.vert" />
     <None Include="CartShader.frag" />
     <None Include="CartShader.vert" />
+    <None Include="EmissiveOnlyShader.frag" />
+    <None Include="EmissiveOnlyShader.vert" />
     <None Include="LightSourceShader.frag" />
     <None Include="LightSourceShader.vert" />
     <None Include="GrassShader.frag" />
@@ -200,6 +204,8 @@
     <None Include="HeightmapShader.vert" />
     <None Include="LightingShader.frag" />
     <None Include="LightingShader.vert" />
+    <None Include="PostProcessCombine.frag" />
+    <None Include="PostProcessCombine.vert" />
     <None Include="PostProcessShader.frag" />
     <None Include="PostProcessShader.vert" />
     <None Include="models\cart\coaster-train.fbx" />

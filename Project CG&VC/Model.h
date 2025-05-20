@@ -19,8 +19,5 @@ private:
 	unsigned int VAO, VBO, EBO;
 	unsigned int indexCount;
 	unsigned int textureID;
-
-	unsigned int LoadTextureFromMemory(unsigned char* data, unsigned int size);
-
 };
 

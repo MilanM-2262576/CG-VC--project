@@ -82,12 +82,58 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
+void RenderScreenQuad();
 GLFWwindow* InitializeGLFW();
 
 int main() {
 	//Initialize GLFW window
 	GLFWwindow* window = InitializeGLFW();
 	if (!window) { return -1; }
+
+	unsigned int bloomFBO = 0;
+	unsigned int bloomTexture = 0;
+
+	// Create bloom framebuffer
+	glGenFramebuffers(1, &bloomFBO);
+	glBindFramebuffer(GL_FRAMEBUFFER, bloomFBO);
+
+	// Create color texture for bloom
+	glGenTextures(1, &bloomTexture);
+	glBindTexture(GL_TEXTURE_2D, bloomTexture);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGBA, GL_FLOAT, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, bloomTexture, 0);
+
+	// Optionally add a renderbuffer for depth if your light models need depth testing
+	unsigned int bloomRBO;
+	glGenRenderbuffers(1, &bloomRBO);
+	glBindRenderbuffer(GL_RENDERBUFFER, bloomRBO);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, SCR_WIDTH, SCR_HEIGHT);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, bloomRBO);
+
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+		std::cout << "ERROR: Bloom FBO is not complete!" << std::endl;
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	unsigned int pingpongFBO[2];
+	unsigned int pingpongColorbuffers[2];
+	glGenFramebuffers(2, pingpongFBO);
+	glGenTextures(2, pingpongColorbuffers);
+
+	for (unsigned int i = 0; i < 2; i++) {
+		glBindFramebuffer(GL_FRAMEBUFFER, pingpongFBO[i]);
+		glBindTexture(GL_TEXTURE_2D, pingpongColorbuffers[i]);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGBA, GL_FLOAT, NULL);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, pingpongColorbuffers[i], 0);
+	}
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	Shader blurShader(".\\BlurShader.vert", ".\\BlurShader.frag");
+	Shader combineShader(".\\PostProcessCombine.vert", ".\\PostProcessCombine.frag");
 
 	PostProcessor postProcessor(SCR_WIDTH, SCR_HEIGHT, ".\\PostProcessShader.vert", ".\\PostProcessShader.frag");
 
@@ -244,7 +290,7 @@ int main() {
 	std::vector<Light> lights;
 	for (size_t i = 0; i < lightPos.size() && lightColor.size(); ++i) {
 		pointLights.push_back({ lightPos[i], lightColor[i], constant, linear, quadratic});
-		lights.emplace_back(lightPos[i], ".\\models\\lamp\\JapaneseLamp.obj", lightColor[i]);
+		lights.emplace_back(lightPos[i], ".\\models\\lamps\\stall-drinks.fbx", lightColor[i]);
 	}
 
 	SkyBox skybox(".\\SkyBoxShader.vert", ".\\SkyBoxShader.frag");
@@ -262,14 +308,18 @@ int main() {
 
 		// Render
 		// --------------------------
-		postProcessor.StartRender();
-
-		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
+		
 		// Projection en view matrices
 		glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 10000.0f);
 		glm::mat4 view = camera.GetViewMatrix();
+
+		// 1. Render light sources to bloom FBO
+		glBindFramebuffer(GL_FRAMEBUFFER, bloomFBO);
+		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		glEnable(GL_DEPTH_TEST);
+		glDisable(GL_BLEND);
 
 		// Update and render the lightsources
 		for (size_t i = 0; i < lights.size(); ++i) {
@@ -281,6 +331,34 @@ int main() {
 			pointLights[i].color = lights[i].color;
 			lights[i].Render(projection, view);
 		}
+
+		bool horizontal = true, first_iteration = true;
+		int blur_passes = 10; // More passes give softer blur
+
+		for (int i = 0; i < blur_passes; ++i) {
+			glBindFramebuffer(GL_FRAMEBUFFER, pingpongFBO[horizontal]);
+
+			blurShader.use();
+			blurShader.setInt("image", 0);
+			blurShader.setBool("horizontal", horizontal);
+
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, first_iteration ? bloomTexture : pingpongColorbuffers[!horizontal]);
+
+			RenderScreenQuad();
+
+			horizontal = !horizontal;
+			if (first_iteration)
+				first_iteration = false;
+		}
+
+		// Done with bloom FBO, return to default framebuffer
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+		postProcessor.StartRender();
+
+		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		// Render the rollercoaster
 		rollerCoaster.Render(projection, view);
@@ -318,7 +396,6 @@ int main() {
 		if (camera.cameraOption == 1)
 			camera.UpdateCartCamera(cart.GetPosition(), cart.GetDirection());
 
-
 		// Render the heightmap
 		glm::mat4 heightmapModel = glm::mat4(1.0f);
 		heightmap.Render(projection, view, heightmapModel);
@@ -331,6 +408,25 @@ int main() {
 
 		PostProcessKernel selectedKernel(currentKernelType);
 		postProcessor.EndRender(selectedKernel, 1.0f / 300.0f);
+
+		// Bind default framebuffer for final output
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		// Use your combine shader
+		combineShader.use();
+		combineShader.setInt("scene", 0);
+		combineShader.setInt("bloom", 1);
+		combineShader.setFloat("bloomStrength", 1.2f); // tweak as needed
+
+		// Bind textures
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, postProcessor.GetColorTexture()); // or your main scene texture
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, pingpongColorbuffers[!horizontal]); // blurred bloom
+
+		// Draw fullscreen quad
+		RenderScreenQuad();
 
 		//Poll for events
 		glfwPollEvents();
@@ -450,4 +546,33 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 // glfw: whenever the window size changed, this callback function executes
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 	glViewport(0, 0, width, height);
+}
+
+void RenderScreenQuad() {
+	glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
+
+	static unsigned int quadVAO = 0;
+	static unsigned int quadVBO;
+
+	if (quadVAO == 0) {
+		float quadVertices[] = {
+			// positions   // texCoords
+			-1.0f,  1.0f,  0.0f, 1.0f,
+			-1.0f, -1.0f,  0.0f, 0.0f,
+			 1.0f,  1.0f,  1.0f, 1.0f,
+			 1.0f, -1.0f,  1.0f, 0.0f,
+		};
+		glGenVertexArrays(1, &quadVAO);
+		glGenBuffers(1, &quadVBO);
+		glBindVertexArray(quadVAO);
+		glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_STATIC_DRAW);
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
+		glEnableVertexAttribArray(1);
+		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
+	}
+	glBindVertexArray(quadVAO);
+	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+	glBindVertexArray(0);
 }

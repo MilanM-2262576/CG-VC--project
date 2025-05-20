@@ -109,7 +109,6 @@ Model::Model(const std::string& path) {
             std::cout << texPath << std::endl;
         }
     }
-    
 }
 
 unsigned int Model::LoadTexture(const char* path) {

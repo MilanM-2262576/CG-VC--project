@@ -8,4 +8,5 @@ uniform sampler2D colormap;
 void main()
 {
     FragColor = texture(colormap, TexCoords);
+    FragColor.a = 1.0f;
 }
