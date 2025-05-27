@@ -77,6 +77,8 @@ float constant = 1.0f;
 float linear = 0.005f;
 float quadratic = 0.00015f;
 
+// Current kernel
+PostProcessKernel::Type currentKernelType = PostProcessKernel::Type::Default;
 
 //functions
 void processInput(GLFWwindow* window);
@@ -96,7 +98,6 @@ int main() {
 	colorPicker = new ColorPicker(SCR_WIDTH, SCR_HEIGHT);
 
 	PostProcessor postProcessor(SCR_WIDTH, SCR_HEIGHT, ".\\PostProcessShader.vert", ".\\PostProcessShader.frag");
-	PostProcessKernel laplacianKernel(PostProcessKernel::Type::Default);
 
 	std::vector<std::vector<glm::vec3>> bezierSegments = {
 		// Segment 1: Start met steile klim
@@ -329,7 +330,7 @@ int main() {
 
 		// Render
 		// --------------------------
-		postProcessor.BeginRender();
+		postProcessor.StartRender();
 
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -417,7 +418,8 @@ int main() {
 		// Render the SkyBox
 		skybox.Render(projection, view);
 
-		postProcessor.EndRender(laplacianKernel, 1.0f / 300.0f);
+		PostProcessKernel selectedKernel(currentKernelType);
+		postProcessor.EndRender(selectedKernel, 1.0f / 300.0f);
 
 		//chroma keying
 		static ChromaKey chromaKey(SCR_WIDTH, SCR_HEIGHT,
@@ -543,10 +545,22 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	if (key == GLFW_KEY_Q && action == GLFW_PRESS)
 		camera.ChangeOption();
 
-
 	if (key == GLFW_KEY_F && action == GLFW_PRESS)
 		fireActive = !fireActive;
-};
+
+	// Change kernel type with 'K'
+	if (key == GLFW_KEY_K && action == GLFW_PRESS) {
+		// Cycle through kernel types
+		if (currentKernelType == PostProcessKernel::Type::Gaussian)
+			currentKernelType = PostProcessKernel::Type::Laplacian;
+		else if (currentKernelType == PostProcessKernel::Type::Laplacian)
+			currentKernelType = PostProcessKernel::Type::Default;
+		else
+			currentKernelType = PostProcessKernel::Type::Gaussian;
+
+		std::cout << "Kernel changed to: " << PostProcessKernel(currentKernelType).Name() << std::endl;
+	}
+}
 
 // glfw: whenever the window size changed, this callback function executes
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {

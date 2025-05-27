@@ -8,7 +8,7 @@ public:
     PostProcessor(unsigned int width, unsigned int height, const char* vertPath, const char* fragPath);
     ~PostProcessor();
 
-    void BeginRender();
+    void StartRender();
     void EndRender(const PostProcessKernel& kernel, float offset = 1.0f / 300.0f);
 
     unsigned int GetTexture() const;

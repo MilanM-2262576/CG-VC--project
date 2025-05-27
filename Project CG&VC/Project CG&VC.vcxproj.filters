@@ -263,8 +263,6 @@
       <Filter>Source Files\Shaders</Filter>
     </None>
     <None Include="..\..\..\..\kenney_coaster-kit\Models\FBX format\coaster-train-front.fbx" />
-    <None Include="PostProcessShader.frag" />
-    <None Include="PostProcessShader.vert" />
     <None Include="Particle.vert">
       <Filter>Source Files\Shaders</Filter>
     </None>
@@ -285,6 +283,10 @@
       <Filter>Source Files\Shaders</Filter>
     </None>
     <None Include="ChromaKey.frag">
+    <None Include="PostProcessShader.frag">
+      <Filter>Source Files\Shaders</Filter>
+    </None>
+    <None Include="PostProcessShader.vert">
       <Filter>Source Files\Shaders</Filter>
     </None>
   </ItemGroup>
