@@ -233,6 +233,7 @@
     <Image Include="..\..\..\..\kenney_coaster-kit\Models\Textures\colormap.png" />
     <Image Include="grass.jpg" />
     <Image Include="heightmap.png" />
+    <Image Include="models\ChromaKeying\overlay.jpg" />
     <Image Include="skybox\back.jpg" />
     <Image Include="skybox\bottom.jpg" />
     <Image Include="skybox\front.jpg" />

@@ -5,11 +5,13 @@
 ChromaKey::ChromaKey(unsigned int width, unsigned int height, const char* overlayPath)
     : m_shader(".\\ChromaKey.vert", ".\\ChromaKey.frag"), m_width(width), m_height(height)
 {
+    
+    stbi_set_flip_vertically_on_load(true);
 
     int tw, th, tc;
     unsigned char* data = stbi_load(overlayPath, &tw, &th, &tc, 4);
     if (!data) {
-        std::cerr << "Failed to load overlay image: " << overlayPath << std::endl;
+        std::cerr << "Failed to load overlay image: " << overlayPath << "\n" << stbi_failure_reason() << std::endl;
     }
     else {
         glGenTextures(1, &m_overlayTexture);

@@ -278,15 +278,19 @@
     <None Include="SphereShader.vert">
       <Filter>Source Files\Shaders</Filter>
     </None>
-    <None Include="SphereShader.frag" />
     <None Include="ChromaKey.vert">
       <Filter>Source Files\Shaders</Filter>
     </None>
     <None Include="ChromaKey.frag">
+      <Filter>Source Files\Shaders</Filter>
+    </None>
     <None Include="PostProcessShader.frag">
       <Filter>Source Files\Shaders</Filter>
     </None>
     <None Include="PostProcessShader.vert">
+      <Filter>Source Files\Shaders</Filter>
+    </None>
+    <None Include="SphereShader.frag">
       <Filter>Source Files\Shaders</Filter>
     </None>
   </ItemGroup>
@@ -347,6 +351,9 @@
     </Image>
     <Image Include="skybox\top.jpg">
       <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="models\ChromaKeying\overlay.jpg">
+      <Filter>Resource Files\models</Filter>
     </Image>
   </ItemGroup>
 </Project>

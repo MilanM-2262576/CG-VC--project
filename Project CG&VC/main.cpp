@@ -30,8 +30,6 @@
 #include "PostProcessor.h"
 #include "PostProcessKernel.h"
 
-
-
 // Screen size
 const unsigned int SCR_WIDTH = 1920;
 const unsigned int SCR_HEIGHT = 1080;
@@ -423,7 +421,7 @@ int main() {
 
 		//chroma keying
 		static ChromaKey chromaKey(SCR_WIDTH, SCR_HEIGHT,
-			".\\models\\skybox\\back.jpg"
+			".\\models\\ChromaKeying\\dog.jpeg"
 		);
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -439,8 +437,6 @@ int main() {
 	glfwTerminate();
 	return 0;
 }
-
-
 
 //Initialization of GLFW
 GLFWwindow* InitializeGLFW() {
