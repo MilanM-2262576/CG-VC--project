@@ -17,6 +17,9 @@ public:
 	glm::vec3 GetPosition() const;
 	glm::vec3 GetDirection() const;
 
+	Shader getShader() { return m_shader; }
+
+
 private:
 	RollerCoaster* m_rollerCoaster;
 	Shader m_shader;

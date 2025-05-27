@@ -33,6 +33,7 @@ void main() {
         // Ambient
         float ambientStrength = 0.1;
         vec3 ambient = ambientStrength * lights[i].color * objectColor;
+      
 
         // Diffuse
         vec3 lightDir = normalize(lights[i].position - FragPos);

@@ -11,14 +11,19 @@ Cart::Cart(RollerCoaster* coaster, float speed)
 
 // this method updates on which bezier curve segment the cart is on
 void Cart::Update(float deltaTime) {
-    m_t += m_speed * deltaTime;
+    BezierCurve& currentCurve = (m_rollerCoaster->getCurves())[m_currentCurveIndex];
 
-    // einde huidige curve segment? ==> volgende segment
+    float tangentLength = glm::length(currentCurve.GetTangent(m_t));
+    if (tangentLength > 0.0001f) {
+        m_t += (m_speed * deltaTime) / tangentLength;
+    }
+    else {
+        m_t += m_speed * deltaTime; // fallback
+    }
+
     if (m_t > 1.0f) {
-        m_t = 0.0f; // Reset t
-        m_currentCurveIndex++; // volgende curve segment
-
-        // Einde van de achtbaan? ==> begin opnieuw
+        m_t = 0.0f;
+        m_currentCurveIndex++;
         if (m_currentCurveIndex >= m_rollerCoaster->getCurves().size()) {
             m_currentCurveIndex = 0;
         }
@@ -26,6 +31,7 @@ void Cart::Update(float deltaTime) {
 
     updatePositionAndDirection();
 }
+
 
 // update the position and direction of the cart
 void Cart::updatePositionAndDirection() {

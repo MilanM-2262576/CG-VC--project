@@ -142,12 +142,16 @@
     <ClCompile Include="BezierTrack.cpp" />
     <ClCompile Include="Boat.cpp" />
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="Cannon.cpp" />
     <ClCompile Include="Cart.cpp" />
+    <ClCompile Include="ChromaKey.cpp" />
+    <ClCompile Include="ColorPicker.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="Heightmap.cpp" />
     <ClCompile Include="Light.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Model.cpp" />
+    <ClCompile Include="ParticleSystem.cpp" />
     <ClCompile Include="PostProcessKernel.cpp" />
     <ClCompile Include="PostProcessor.cpp" />
     <ClCompile Include="Rollercoaster.cpp" />
@@ -156,6 +160,7 @@
     <ClCompile Include="Ship.cpp" />
     <ClCompile Include="Shipwreck.cpp" />
     <ClCompile Include="SkyBox.cpp" />
+    <ClCompile Include="Sphere.cpp" />
     <ClCompile Include="stb_image.cpp" />
     <ClCompile Include="Tower.cpp" />
     <ClCompile Include="Tree.cpp" />
@@ -167,10 +172,14 @@
     <ClInclude Include="BezierTrack.h" />
     <ClInclude Include="Boat.h" />
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="Cannon.h" />
     <ClInclude Include="Cart.h" />
+    <ClInclude Include="ChromaKey.h" />
+    <ClInclude Include="ColorPicker.h" />
     <ClInclude Include="Heightmap.h" />
     <ClInclude Include="Light.h" />
     <ClInclude Include="Model.h" />
+    <ClInclude Include="ParticleSystem.h" />
     <ClInclude Include="PostProcessKernel.h" />
     <ClInclude Include="PostProcessor.h" />
     <ClInclude Include="resource.h" />
@@ -180,6 +189,7 @@
     <ClInclude Include="Ship.h" />
     <ClInclude Include="Shipwreck.h" />
     <ClInclude Include="SkyBox.h" />
+    <ClInclude Include="Sphere.h" />
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="Tower.h" />
     <ClInclude Include="Tree.h" />
@@ -192,6 +202,8 @@
     <None Include="BezierShader.vert" />
     <None Include="CartShader.frag" />
     <None Include="CartShader.vert" />
+    <None Include="ChromaKey.frag" />
+    <None Include="ChromaKey.vert" />
     <None Include="LightSourceShader.frag" />
     <None Include="LightSourceShader.vert" />
     <None Include="GrassShader.frag" />
@@ -200,6 +212,10 @@
     <None Include="HeightmapShader.vert" />
     <None Include="LightingShader.frag" />
     <None Include="LightingShader.vert" />
+    <None Include="Particle.frag" />
+    <None Include="Particle.vert" />
+    <None Include="PickingShader.frag" />
+    <None Include="PickingShader.vert" />
     <None Include="PostProcessShader.frag" />
     <None Include="PostProcessShader.vert" />
     <None Include="models\cart\coaster-train.fbx" />
@@ -208,6 +224,8 @@
     <None Include="SceneryShader.vert" />
     <None Include="SkyBoxShader.frag" />
     <None Include="SkyBoxShader.vert" />
+    <None Include="SphereShader.frag" />
+    <None Include="SphereShader.vert" />
     <None Include="WaterShader.frag" />
     <None Include="WaterShader.vert" />
   </ItemGroup>

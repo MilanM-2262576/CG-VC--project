@@ -3,6 +3,11 @@
 #include <glm/glm.hpp>
 #include <vector>
 
+struct ArcLengthEntry {
+	float t;
+	float length;
+};
+
 /*
 * This class represents the Bezier curve 
 * containts:
@@ -19,9 +24,12 @@ public:
 	void AddPoint(glm::vec3 point) { m_curvePoints.push_back(point); }
 	void ClearPoints() { m_curvePoints.clear(); }
 
+	glm::vec3 GetTangent(float t) const;
+
 private:
 	std::vector<glm::vec3> m_controlPoints;
 	std::vector<glm::vec3> m_curvePoints;
+
 
 };
 

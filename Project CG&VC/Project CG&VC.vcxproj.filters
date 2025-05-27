@@ -96,6 +96,27 @@
     <ClCompile Include="Tower.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="PostProcessKernel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PostProcessor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Cannon.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ParticleSystem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Sphere.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ColorPicker.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ChromaKey.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BezierCurve.h">
@@ -158,6 +179,27 @@
     <ClInclude Include="Tower.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="PostProcessKernel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PostProcessor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Cannon.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ParticleSystem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Sphere.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ColorPicker.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ChromaKey.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="BezierShader.vert">
@@ -215,9 +257,34 @@
       <Filter>Resource Files\models</Filter>
     </None>
     <None Include="SceneryShader.vert">
-       <Filter>Source Files\Shaders</Filter>
+      <Filter>Source Files\Shaders</Filter>
     </None>
     <None Include="SceneryShader.frag">
+      <Filter>Source Files\Shaders</Filter>
+    </None>
+    <None Include="..\..\..\..\kenney_coaster-kit\Models\FBX format\coaster-train-front.fbx" />
+    <None Include="PostProcessShader.frag" />
+    <None Include="PostProcessShader.vert" />
+    <None Include="Particle.vert">
+      <Filter>Source Files\Shaders</Filter>
+    </None>
+    <None Include="Particle.frag">
+      <Filter>Source Files\Shaders</Filter>
+    </None>
+    <None Include="PickingShader.vert">
+      <Filter>Source Files\Shaders</Filter>
+    </None>
+    <None Include="PickingShader.frag">
+      <Filter>Source Files\Shaders</Filter>
+    </None>
+    <None Include="SphereShader.vert">
+      <Filter>Source Files\Shaders</Filter>
+    </None>
+    <None Include="SphereShader.frag" />
+    <None Include="ChromaKey.vert">
+      <Filter>Source Files\Shaders</Filter>
+    </None>
+    <None Include="ChromaKey.frag">
       <Filter>Source Files\Shaders</Filter>
     </None>
   </ItemGroup>
@@ -260,9 +327,6 @@
     </Image>
     <Image Include="..\..\..\..\kenney_coaster-kit\Models\Textures\colormap.png">
       <Filter>Resource Files\models\cart</Filter>
-    </Image>
-    <Image Include="models\lamp\Textures\untitled_Material.001_BaseColor.png">
-      <Filter>Resource Files</Filter>
     </Image>
     <Image Include="skybox\back.jpg">
       <Filter>Resource Files</Filter>

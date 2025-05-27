@@ -88,3 +88,17 @@ glm::vec3 BezierCurve::GetPoint(float t) const {
 
 
 
+glm::vec3 BezierCurve::GetTangent(float t) const {
+    if (m_controlPoints.size() == 4) {
+        const glm::vec3& p0 = m_controlPoints[0];
+        const glm::vec3& p1 = m_controlPoints[1];
+        const glm::vec3& p2 = m_controlPoints[2];
+        const glm::vec3& p3 = m_controlPoints[3];
+        return
+            3.0f * (1 - t) * (1 - t) * (p1 - p0) +
+            6.0f * (1 - t) * t * (p2 - p1) +
+            3.0f * t * t * (p3 - p2);
+    }
+
+    return glm::vec3(0.0f);
+}
