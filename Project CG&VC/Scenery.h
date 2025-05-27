@@ -32,6 +32,21 @@ public:
     void SetRotation(const glm::vec3& rot) { m_rotation = rot; }
     const glm::vec3& GetRotation() const { return m_rotation; }
 
+
+    glm::mat4 GetModelMatrix() {
+        glm::mat4 model = glm::mat4(1.0f);
+        model = glm::translate(model, m_position);
+        model = glm::rotate(model, m_rotation.y, glm::vec3(0, 1, 0)); 
+        model = glm::scale(model, glm::vec3(m_scale));
+        return model;
+    }
+    
+
+    Shader getShader() { return m_shader; }
+
+    Model getModel() { return m_model; }
+
+
 protected:
     Model m_model;
     Shader m_shader;

@@ -1,6 +1,8 @@
 #include "Heightmap.h"
 
-Heightmap::Heightmap(const std::string& heightmapPath, const std::string& texturePath, float yScale, float yShift) {
+Heightmap::Heightmap(const std::string& heightmapPath, const std::string& texturePath, float yScale, float yShift) 
+    : m_heightmapShader(".\\heightmapShader.vert", ".\\heightmapShader.frag")
+{
     LoadHeightmap(heightmapPath, yScale, yShift);
     GenerateBuffers();
 
@@ -116,17 +118,16 @@ void Heightmap::GenerateBuffers() {
 }
 
 void Heightmap::Render(const glm::mat4& projection, const glm::mat4& view, const glm::mat4& model) {
-    Shader heightmapShader(".\\heightmapShader.vert", ".\\heightmapShader.frag");
-    heightmapShader.use();
+    m_heightmapShader.use();
 
-    heightmapShader.setInt("sandTexture", 0);
-    heightmapShader.setInt("grassTexture", 1);
-    heightmapShader.setInt("rockTexture", 2);
-    heightmapShader.setInt("snowTexture", 3);
+    m_heightmapShader.setInt("sandTexture", 0);
+    m_heightmapShader.setInt("grassTexture", 1);
+    m_heightmapShader.setInt("rockTexture", 2);
+    m_heightmapShader.setInt("snowTexture", 3);
 
-    heightmapShader.setMat4("projection", projection);
-    heightmapShader.setMat4("view", view);
-    heightmapShader.setMat4("model", model);
+    m_heightmapShader.setMat4("projection", projection);
+    m_heightmapShader.setMat4("view", view);
+    m_heightmapShader.setMat4("model", model);
 
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, sandTextureID);

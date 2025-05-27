@@ -1,6 +1,7 @@
 #include "Water.h"
+#include "Shader.h"
 
-Water::Water(float seaLevel, const std::string heightmapPath) : seaLevel(seaLevel) {
+Water::Water(float seaLevel, const std::string heightmapPath) : seaLevel(seaLevel), m_shader(".\\waterShader.vert", ".\\waterShader.frag") {
 	int width, height, nChannels;
 	unsigned char* data = stbi_load(heightmapPath.c_str(), &width, &height, &nChannels, 0);
 	if (!data) {
@@ -39,21 +40,20 @@ Water::Water(float seaLevel, const std::string heightmapPath) : seaLevel(seaLeve
 	waterTextureID = Utilities::loadTexture(".\\textures\\water.jpg");
 }
 
-void Water::Render(const glm::mat4& projection, const glm::mat4& view) const {
-	Shader waterShader(".\\waterShader.vert", ".\\waterShader.frag");
-	waterShader.use();
+void Water::Render(const glm::mat4& projection, const glm::mat4& view) {
+	m_shader.use();
 
-	waterShader.setMat4("projection", projection);
-	waterShader.setMat4("view", view);
+	m_shader.setMat4("projection", projection);
+	m_shader.setMat4("view", view);
 
 	glm::mat4 model = glm::mat4(1.0f);
 	model = glm::translate(model, glm::vec3(0.0f, seaLevel + 0.01f, 0.0f));
-	waterShader.setMat4("model", model);
+	m_shader.setMat4("model", model);
 
-	waterShader.setVec3("waterColor", glm::vec3(0.0f, 0.3f, 0.8f));
-	waterShader.setFloat("transparency", 0.5f);
+	m_shader.setVec3("waterColor", glm::vec3(0.0f, 0.3f, 0.8f));
+	m_shader.setFloat("transparency", 0.5f);
 
-	waterShader.setInt("waterTexture", 0);
+	m_shader.setInt("waterTexture", 0);
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, waterTextureID);
@@ -64,4 +64,9 @@ void Water::Render(const glm::mat4& projection, const glm::mat4& view) const {
 	glBindVertexArray(VAO);
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 	glDisable(GL_POLYGON_OFFSET_FILL);
+}
+
+void Water::SetTime(float time) {
+	m_shader.use();
+	m_shader.setFloat("u_Time", time);
 }

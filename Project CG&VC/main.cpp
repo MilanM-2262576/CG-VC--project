@@ -1,10 +1,11 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
+#include <glm/glm.hpp>
+#include <glm/gtc/epsilon.hpp>
+
 #include "stb_image.h"
-
 #include <iostream>
-
 #include "Camera.h"
 #include "Shader.h"
 #include "Heightmap.h"
@@ -18,15 +19,17 @@
 #include "Ship.h"
 #include "Shipwreck.h"
 #include "Tower.h"
-
+#include "Cannon.h"
+#include "Sphere.h"
+#include "ColorPicker.h"
+#include "ChromaKey.h"
+#include "ParticleSystem.h"
 #include "Light.h"
 #include "Utilities.h"
 #include "SkyBox.h"
-
 #include "PostProcessor.h"
 #include "PostProcessKernel.h"
 
-#include <random>
 
 
 // Screen size
@@ -42,6 +45,13 @@ bool firstMouse = true;
 // timing
 float deltaTime = 0.0f;	// time between current frame and last frame
 float lastFrame = 0.0f;
+
+// particles
+bool fireActive = false;
+
+//colorpicker
+ColorPicker* colorPicker = nullptr;
+Sphere* redSphere = nullptr;
 
 // lighting
 std::vector<glm::vec3> lightPos = {
@@ -67,11 +77,6 @@ float constant = 1.0f;
 float linear = 0.005f;
 float quadratic = 0.00015f;
 
-// FBO variables
-unsigned int fbo = 0;
-unsigned int fboTexture = 0;
-unsigned int fboRBO = 0;
-
 // Current kernel
 PostProcessKernel::Type currentKernelType = PostProcessKernel::Type::Default;
 
@@ -84,10 +89,13 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 GLFWwindow* InitializeGLFW();
 
+
 int main() {
 	//Initialize GLFW window
 	GLFWwindow* window = InitializeGLFW();
 	if (!window) { return -1; }
+
+	colorPicker = new ColorPicker(SCR_WIDTH, SCR_HEIGHT);
 
 	PostProcessor postProcessor(SCR_WIDTH, SCR_HEIGHT, ".\\PostProcessShader.vert", ".\\PostProcessShader.frag");
 
@@ -149,7 +157,7 @@ int main() {
 	RollerCoaster rollerCoaster(track.GetSegments(), 32);
 
 	// Create a cart
-	Cart cart(&rollerCoaster, 0.3f); 
+	Cart cart(&rollerCoaster, 40.0f); 
 
 
 	// Create Heightmap
@@ -236,6 +244,65 @@ int main() {
 		towers.emplace_back(glm::vec3(x, y, z), 0.04f); // Adjust scale as needed
 	}
 
+	// Create canons
+	std::vector<Cannon> cannons;
+	std::vector<glm::vec2> cannonPositions = {
+		{160, 120},
+		{120, 140},
+	};
+	
+	for (const auto& pos2d : cannonPositions) {
+		float x = pos2d.x;
+		float z = pos2d.y;
+		float y = heightmap.GetHeightAt(x, z);
+		cannons.emplace_back(glm::vec3(x, y, z), 0.04f); // Adjust scale as needed
+	}
+
+	// interactive bol
+	redSphere = new Sphere(glm::vec3(79.0f, 36.0f, 136.0f), 5.0f, glm::vec3(1.0f, 0.0f, 0.0f));
+
+	//fire
+	ParticleSystem fireParticles(100, ".\\fire.png");
+
+	std::vector<glm::vec3> firePositionsLeft;
+	std::vector<glm::vec3> firePositionsRight;
+
+	float fireSpacing = 8.0f; 
+	float halfWidth = 2.5f * 0.5f; 
+
+	for (const auto& segment : track.GetSegments()) {
+		BezierCurve curve(segment);
+		std::vector<glm::vec3> points = curve.GeneratePoints(100);
+
+		float accumulated = 0.0f;
+		for (size_t i = 1; i < points.size(); ++i) {
+			glm::vec3 prev = points[i - 1];
+			glm::vec3 curr = points[i];
+			float dist = glm::length(curr - prev);
+			accumulated += dist;
+			if (accumulated >= fireSpacing) {
+				glm::vec3 direction = glm::normalize(curr - prev);
+				glm::vec3 up(0, 1, 0);
+				if (glm::length(glm::cross(direction, up)) < 0.01f)
+					up = glm::vec3(1, 0, 0);
+				glm::vec3 right = glm::normalize(glm::cross(up, direction));
+				up = glm::normalize(glm::cross(direction, right));
+
+				firePositionsLeft.push_back(curr - right * halfWidth);
+				firePositionsRight.push_back(curr + right * halfWidth);
+
+				accumulated = 0.0f;
+			}
+		}
+	}
+
+	std::vector<ParticleSystem> fireEmitters;
+	for (const auto& pos : firePositionsLeft)
+		fireEmitters.emplace_back(50, ".\\fire.png");
+	for (const auto& pos : firePositionsRight)
+		fireEmitters.emplace_back(50, ".\\fire.png");
+
+
 	// Create water plane
 	Water water(0.0f, ".\\heightmap.jpeg");
 
@@ -246,6 +313,7 @@ int main() {
 		pointLights.push_back({ lightPos[i], lightColor[i], constant, linear, quadratic});
 		lights.emplace_back(lightPos[i], ".\\models\\lamp\\JapaneseLamp.obj", lightColor[i]);
 	}
+
 
 	SkyBox skybox(".\\SkyBoxShader.vert", ".\\SkyBoxShader.frag");
 
@@ -315,6 +383,26 @@ int main() {
 			tower.Render(projection, view);
 		}
 
+		// Render cannons
+		for (auto& cannon : cannons) {
+			cannon.Render(projection, view);
+		}
+
+		// Render interactieve vlag
+		redSphere->Render(projection, view);
+
+		//render vuur 
+		for (size_t i = 0; i < firePositionsLeft.size(); ++i) {
+			fireEmitters[i].SetActive(fireActive);
+			fireEmitters[i].Update(deltaTime, firePositionsLeft[i]);
+			fireEmitters[i].Render(projection, view);
+		}
+		for (size_t i = 0; i < firePositionsRight.size(); ++i) {
+			fireEmitters[i + firePositionsLeft.size()].SetActive(fireActive);
+			fireEmitters[i + firePositionsLeft.size()].Update(deltaTime, firePositionsRight[i]);
+			fireEmitters[i + firePositionsLeft.size()].Render(projection, view);
+		}
+
 		if (camera.cameraOption == 1)
 			camera.UpdateCartCamera(cart.GetPosition(), cart.GetDirection());
 
@@ -322,8 +410,9 @@ int main() {
 		// Render the heightmap
 		glm::mat4 heightmapModel = glm::mat4(1.0f);
 		heightmap.Render(projection, view, heightmapModel);
-		
-		// Render the water (possible to expand with more details etc.)
+
+		// Render wat 
+		water.SetTime(currentFrame);
 		water.Render(projection, view);
 
 		// Render the SkyBox
@@ -331,6 +420,15 @@ int main() {
 
 		PostProcessKernel selectedKernel(currentKernelType);
 		postProcessor.EndRender(selectedKernel, 1.0f / 300.0f);
+
+		//chroma keying
+		static ChromaKey chromaKey(SCR_WIDTH, SCR_HEIGHT,
+			".\\models\\skybox\\back.jpg"
+		);
+
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+		chromaKey.Render(postProcessor.GetTexture());
 
 		//Poll for events
 		glfwPollEvents();
@@ -413,13 +511,27 @@ void mouse_callback(GLFWwindow* window, double xposIn, double yposIn) {
 }
 
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods) {
+
 	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
-		// Print the camera's world position
-		std::cout << "Camera position: ("
-			<< camera.Position.x << ", "
-			<< camera.Position.y << ", "
-			<< camera.Position.z << ")" << std::endl;
+		double xpos, ypos;
+		glfwGetCursorPos(window, &xpos, &ypos);
+		int mx = SCR_WIDTH / 2;
+		int my = SCR_HEIGHT / 2;
+
+		glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 10000.0f);
+		glm::mat4 view = camera.GetViewMatrix();
+
+
+		unsigned char data[3];
+		glReadPixels(mx, my, 1, 1, GL_RGB, GL_UNSIGNED_BYTE, data);
+		std::cout << "Pick color: " << (int)data[0] << "," << (int)data[1] << "," << (int)data[2] << std::endl;
+
+		if (colorPicker->Pick(mx, my, projection, view, *redSphere)) {
+			fireActive = !fireActive;
+		}
+
 	}
+	
 }
 
 // glfw: whenever the mouse scroll wheel scrolls, this callback is called
@@ -432,6 +544,9 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	std::cout << key << "pressed" << std::endl;
 	if (key == GLFW_KEY_Q && action == GLFW_PRESS)
 		camera.ChangeOption();
+
+	if (key == GLFW_KEY_F && action == GLFW_PRESS)
+		fireActive = !fireActive;
 
 	// Change kernel type with 'K'
 	if (key == GLFW_KEY_K && action == GLFW_PRESS) {

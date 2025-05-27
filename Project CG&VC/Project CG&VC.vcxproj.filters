@@ -102,6 +102,21 @@
     <ClCompile Include="PostProcessor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Cannon.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ParticleSystem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Sphere.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ColorPicker.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ChromaKey.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BezierCurve.h">
@@ -170,6 +185,21 @@
     <ClInclude Include="PostProcessor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Cannon.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ParticleSystem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Sphere.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ColorPicker.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ChromaKey.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="BezierShader.vert">
@@ -233,6 +263,26 @@
       <Filter>Source Files\Shaders</Filter>
     </None>
     <None Include="..\..\..\..\kenney_coaster-kit\Models\FBX format\coaster-train-front.fbx" />
+    <None Include="Particle.vert">
+      <Filter>Source Files\Shaders</Filter>
+    </None>
+    <None Include="Particle.frag">
+      <Filter>Source Files\Shaders</Filter>
+    </None>
+    <None Include="PickingShader.vert">
+      <Filter>Source Files\Shaders</Filter>
+    </None>
+    <None Include="PickingShader.frag">
+      <Filter>Source Files\Shaders</Filter>
+    </None>
+    <None Include="SphereShader.vert">
+      <Filter>Source Files\Shaders</Filter>
+    </None>
+    <None Include="SphereShader.frag" />
+    <None Include="ChromaKey.vert">
+      <Filter>Source Files\Shaders</Filter>
+    </None>
+    <None Include="ChromaKey.frag">
     <None Include="PostProcessShader.frag">
       <Filter>Source Files\Shaders</Filter>
     </None>

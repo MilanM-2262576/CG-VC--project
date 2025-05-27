@@ -150,10 +150,10 @@ unsigned int Model::LoadTexture(const char* path) {
 }
 
 void Model::Draw(Shader& shader) {
-    if (textureID) {
+    if (m_useTexture && textureID) {
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, textureID);
-        shader.setInt("colormap", 0); 
+        shader.setInt("colormap", 0);
     }
     glBindVertexArray(VAO);
     glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, 0);

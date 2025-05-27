@@ -17,6 +17,7 @@ public:
 
 	std::vector<BezierCurve>& getCurves() { return m_curves; }
 
+	Shader getShader() { return m_shader;  }
 
 
 private:

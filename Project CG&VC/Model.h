@@ -6,6 +6,7 @@
 
 #include <string>
 #include <cstring>
+#include "Shader.h"
 
 class Model {
 public:
@@ -16,11 +17,12 @@ public:
 private:
 	std::string m_directory;
 
+	bool m_useTexture = true;
+
 	unsigned int VAO, VBO, EBO;
 	unsigned int indexCount;
 	unsigned int textureID;
 
-	unsigned int LoadTextureFromMemory(unsigned char* data, unsigned int size);
 
 };
 
