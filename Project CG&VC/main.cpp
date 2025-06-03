@@ -256,7 +256,7 @@ int main() {
 		cannons.emplace_back(glm::vec3(x, y, z), 0.04f); // Adjust scale as needed
 	}
 
-	// interactive bol
+	// interactive sphere
 	redSphere = new Sphere(glm::vec3(79.0f, 36.0f, 136.0f), 5.0f, glm::vec3(1.0f, 0.0f, 0.0f));
 
 	//fire
@@ -419,20 +419,21 @@ int main() {
 		PostProcessKernel selectedKernel(currentKernelType);
 		postProcessor.EndRender(selectedKernel, 1.0f / 300.0f);
 
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
+
 		//chroma keying
 		static ChromaKey chromaKey(SCR_WIDTH, SCR_HEIGHT,
 			".\\models\\ChromaKeying\\dog.jpeg"
 		);
+		chromaKey.Render();
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-		chromaKey.Render(postProcessor.GetTexture());
 
 		//Poll for events
 		glfwPollEvents();
 		glfwSwapBuffers(window);
 	}
-
 
 	glfwTerminate();
 	return 0;
@@ -445,7 +446,25 @@ GLFWwindow* InitializeGLFW() {
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-	GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "CG&VC project", NULL, NULL);
+	// Get primary monitor and its video mode
+	GLFWmonitor* monitor = glfwGetPrimaryMonitor();
+	const GLFWvidmode* mode = glfwGetVideoMode(monitor);
+
+	// Optionally update SCR_WIDTH and SCR_HEIGHT if they are not const
+	// SCR_WIDTH = mode->width;
+	// SCR_HEIGHT = mode->height;
+
+
+	// Change these windows to get fullscreen or not
+	//GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "CG&VC project", NULL, NULL);
+
+	GLFWwindow* window = glfwCreateWindow(
+		mode->width, mode->height,
+		"CG&VC project",
+		monitor, // Fullscreen
+		NULL
+	);
+
 	if (window == NULL) {
 		std::cout << "Failed to create GLFW window" << std::endl;
 		glfwTerminate();
@@ -472,6 +491,7 @@ GLFWwindow* InitializeGLFW() {
 void processInput(GLFWwindow* window) {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
+
 
 	// camera controls
 	if (camera.cameraOption == 0) {

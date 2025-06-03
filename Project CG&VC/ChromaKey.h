@@ -9,7 +9,7 @@ public:
     ChromaKey(unsigned int width, unsigned int height, const char* imagePath);
 
 
-    void Render(GLuint sceneTexture);
+    void Render();
 
 
 private:

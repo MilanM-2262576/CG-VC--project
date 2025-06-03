@@ -13,29 +13,28 @@ ChromaKey::ChromaKey(unsigned int width, unsigned int height, const char* overla
     if (!data) {
         std::cerr << "Failed to load overlay image: " << overlayPath << "\n" << stbi_failure_reason() << std::endl;
     }
-    else {
-        glGenTextures(1, &m_overlayTexture);
-        glBindTexture(GL_TEXTURE_2D, m_overlayTexture);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, tw, th, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        stbi_image_free(data);
-    }
+    
+    glGenTextures(1, &m_overlayTexture);
+    glBindTexture(GL_TEXTURE_2D, m_overlayTexture);
+    GLenum format = (tc == 4) ? GL_RGBA : GL_RGB;
+    glTexImage2D(GL_TEXTURE_2D, 0, format, tw, th, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    stbi_image_free(data);
 
     InitQuad();
 }
 
-
 void ChromaKey::InitQuad() {
-    // Stel breedte en hoogte van de overlay in pixels in
+    // Overlay size in pixels (dog image size)
     const float overlayWidth = 400.0f;
     const float overlayHeight = 200.0f;
 
-    // Zet om naar NDC (x: -1 tot 1, y: -1 tot 1)
+    // Convert to NDC
     float left = -1.0f;
-    float right = -1.0f + 2.0f * (overlayWidth / 1920);
-    float top = 1.0f;
-    float bottom = 1.0f - 2.0f * (overlayHeight / 1080);
+    float right = left + 2.0f * (overlayWidth / m_width);
+    float bottom = -1.0f;
+    float top = bottom + 2.0f * (overlayHeight / m_height);
 
     float quadVertices[] = {
         // positions      // texCoords
@@ -47,6 +46,7 @@ void ChromaKey::InitQuad() {
         right,   bottom,  1.0f, 0.0f,
         right,   top,     1.0f, 1.0f
     };
+
     glGenVertexArrays(1, &m_quadVAO);
     glGenBuffers(1, &m_quadVBO);
     glBindVertexArray(m_quadVAO);
@@ -59,17 +59,18 @@ void ChromaKey::InitQuad() {
     glBindVertexArray(0);
 }
 
-void ChromaKey::Render(GLuint sceneTexture) {
+void ChromaKey::Render() {
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
     m_shader.use();
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, sceneTexture);
-    m_shader.setInt("sceneTexture", 0);
-
-    glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, m_overlayTexture);
-    m_shader.setInt("overlayTexture", 1);
+    m_shader.setInt("overlayTexture", 0);
 
     glBindVertexArray(m_quadVAO);
     glDrawArrays(GL_TRIANGLES, 0, 6);
     glBindVertexArray(0);
+
+    glDisable(GL_BLEND);
 }
